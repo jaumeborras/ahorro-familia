@@ -1332,14 +1332,15 @@
         popup.innerHTML = buildCalGrid(goalId);
         popup.style.display = 'block';
         document.getElementById('dtrg-' + goalId)?.classList.add('open');
+        document.removeEventListener('click', _calOutside);
         setTimeout(() => document.addEventListener('click', _calOutside), 10);
     };
 
     function _calOutside(e) {
         if (_openCal === null) return;
-        if (e.target.closest('.cal-popup') || e.target.closest('.date-trigger')) {
-            setTimeout(() => document.addEventListener('click', _calOutside), 10);
-        } else { closeCal(_openCal); }
+        if (!e.target.closest('.cal-popup') && !e.target.closest('.date-trigger')) {
+            closeCal(_openCal);
+        }
     }
 
     function closeCal(id) {
@@ -1347,6 +1348,7 @@
         if (p) p.style.display = 'none';
         document.getElementById('dtrg-' + id)?.classList.remove('open');
         _openCal = null;
+        document.removeEventListener('click', _calOutside);
     }
 
     window.calNavClick = function(e, goalId, dir) {
