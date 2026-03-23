@@ -1065,9 +1065,8 @@
 
     function travelStatsHTML(g, monthly) {
         let monthsRemaining = null;
-        if (g.targetDate) {
-            const [y, m] = g.targetDate.split('-').map(Number);
-            const target = new Date(y, m - 1, 1);
+        if (g.targetMonth && g.targetYear) {
+            const target = new Date(g.targetYear, g.targetMonth - 1, 1);
             const now    = new Date();
             monthsRemaining = Math.max(0, (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth()));
         }
@@ -1092,19 +1091,19 @@
     }
     const SELECT_STYLE = `style="flex:1; border:1.5px solid var(--border); border-radius:10px; padding:10px 8px; font-size:13px; font-family:inherit; color:var(--text); background:white; outline:none; cursor:pointer; appearance:none; -webkit-appearance:none; background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%2364748b%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22/></svg>'); background-repeat:no-repeat; background-position:right 8px center; padding-right:26px;"`;
 
-    function monthSelect(id, targetDate) {
-        const currentMonth = targetDate ? parseInt(targetDate.split('-')[1]) : 0;
+    function monthSelect(id, g) {
+        const current = g.targetMonth || 0;
         const options = MESES.map((m, i) =>
-            `<option value="${i+1}" ${currentMonth === i+1 ? 'selected' : ''}>${m}</option>`
+            `<option value="${i+1}" ${current === i+1 ? 'selected' : ''}>${m}</option>`
         ).join('');
         return `<select ${SELECT_STYLE} onchange="updTravelDatePart(${id},'month',this.value)"><option value="">Mes</option>${options}</select>`;
     }
 
-    function yearSelect(id, targetDate) {
-        const currentYear = targetDate ? parseInt(targetDate.split('-')[0]) : 0;
+    function yearSelect(id, g) {
+        const current  = g.targetYear || 0;
         const thisYear = new Date().getFullYear();
-        const options = Array.from({length: 10}, (_, i) => thisYear + i).map(y =>
-            `<option value="${y}" ${currentYear === y ? 'selected' : ''}>${y}</option>`
+        const options  = Array.from({length: 10}, (_, i) => thisYear + i).map(y =>
+            `<option value="${y}" ${current === y ? 'selected' : ''}>${y}</option>`
         ).join('');
         return `<select ${SELECT_STYLE} onchange="updTravelDatePart(${id},'year',this.value)"><option value="">Año</option>${options}</select>`;
     }
@@ -1139,8 +1138,8 @@
                     <div>
                         <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:5px">Fecha del viaje</div>
                         <div style="display:flex; gap:6px">
-                            ${monthSelect(g.id, g.targetDate)}
-                            ${yearSelect(g.id, g.targetDate)}
+                            ${monthSelect(g.id, g)}
+                            ${yearSelect(g.id, g)}
                         </div>
                     </div>
                 </div>
@@ -1209,7 +1208,7 @@
 
     window.addTravelGoal = function() {
         if (!S.travelGoals) S.travelGoals = [];
-        S.travelGoals.push({ id: S.nextId++, name: '', amount: 0, targetDate: '' });
+        S.travelGoals.push({ id: S.nextId++, name: '', amount: 0, targetMonth: null, targetYear: null });
         render(); schedSave();
     };
 
@@ -1234,10 +1233,8 @@
     window.updTravelDatePart = function(id, part, value) {
         const g = S.travelGoals.find(g => g.id === id);
         if (!g) return;
-        const parts = (g.targetDate || '-').split('-');
-        const y = part === 'year'  ? value : (parts[0] || '');
-        const m = part === 'month' ? String(value).padStart(2, '0') : (parts[1] || '');
-        g.targetDate = (y && m) ? `${y}-${m}` : '';
+        if (part === 'month') g.targetMonth = value ? parseInt(value) : null;
+        if (part === 'year')  g.targetYear  = value ? parseInt(value) : null;
         // Only update the stats div — don't re-render the whole card (would reset the selects)
         const statsEl = document.getElementById('ts-' + id);
         if (statsEl) statsEl.innerHTML = travelStatsHTML(g, travelMonthly());
