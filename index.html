@@ -1063,7 +1063,7 @@
                  <td class="amount-col">
                     <input type="number" value="${exp.amount || ''}" min="0" step="10" placeholder="0"
                         data-id="${exp.id}" data-field="amount" data-type="${type}"
-                        oninput="updExpAmt(this)">
+                        onchange="updExpAmt(this)">
                  </td>
                  <td><button class="btn-delete" onclick="delExp('${type}',${exp.id})">✕</button></td>`;
             tbody.appendChild(tr);
@@ -1094,7 +1094,7 @@
                     <div class="input-group">
                         <span class="input-prefix">€</span>
                         <input type="number" value="${g.amount}" min="0" step="100"
-                            oninput="updTravelAmt(${g.id}, +this.value)">
+                            onchange="updTravelAmt(${g.id}, +this.value)">
                     </div>
                 </div>
                 <div class="travel-stats">
