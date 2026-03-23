@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ahorro · Jaime & Marina</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --orange: #d97706;
+            --orange-light: #fef3c7;
+            --purple: #7c3aed;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 14px;
+            --shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        header h1 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        header .header-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .header-date {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 28px 16px 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-header .card-title { margin-bottom: 0; }
+
+        /* Metrics */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .metrics { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .metric-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .metric-card.income::before { background: var(--primary); }
+        .metric-card.expenses::before { background: var(--purple); }
+        .metric-card.savings::before { background: var(--green); }
+        .metric-card.free::before { background: var(--orange); }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.1;
+        }
+
+        .metric-value.positive { color: var(--green); }
+        .metric-value.negative { color: var(--red); }
+        .metric-value.warning { color: var(--orange); }
+
+        .metric-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Deficit alert */
+        .alert {
+            background: var(--red-light);
+            border: 1.5px solid #fca5a5;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--red);
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert.show { display: flex; }
+
+        /* Two-col layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 599px) {
+            .two-col { grid-template-columns: 1fr; }
+        }
+
+        /* Income inputs */
+        .income-person {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .person-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .avatar-j { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .avatar-m { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+
+        .person-label span {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        .input-prefix {
+            padding: 10px 12px;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 700;
+            border-right: 1.5px solid var(--border);
+            user-select: none;
+        }
+
+        .input-group input {
+            border: none;
+            outline: none;
+            padding: 10px 12px;
+            font-size: 16px;
+            font-weight: 700;
+            width: 100%;
+            color: var(--text);
+            font-family: inherit;
+            background: transparent;
+        }
+
+        /* Savings goal */
+        .toggle-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .toggle-btn.active {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .savings-result {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .savings-result strong {
+            color: var(--green);
+            font-size: 15px;
+        }
+
+        /* Expense tables */
+        .tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 14px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 8px 18px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-bottom: 2.5px solid transparent;
+            margin-bottom: -1.5px;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-total {
+            margin-left: 4px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .tab-btn.active .tab-total {
+            background: #dbeafe;
+            color: var(--primary);
+        }
+
+        table.expense-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .expense-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            padding: 6px 10px 10px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .expense-table th.right { text-align: right; }
+        .expense-table th.center { text-align: center; width: 44px; }
+
+        .expense-table td {
+            padding: 2px 4px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .expense-table tr:last-child td { border-bottom: none; }
+
+        .expense-table td input[type="text"],
+        .expense-table td input[type="number"] {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 8px 10px;
+            font-size: 14px;
+            color: var(--text);
+            background: transparent;
+            font-family: inherit;
+            border-radius: 7px;
+            transition: background 0.15s;
+        }
+
+        .expense-table td input:focus {
+            background: #f0f7ff;
+        }
+
+        .expense-table td.amount-col {
+            width: 130px;
+        }
+
+        .expense-table td.amount-col input {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .expense-table tfoot td {
+            padding: 10px 10px;
+            font-weight: 700;
+            font-size: 14px;
+            border-top: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .expense-table tfoot td.amount-col {
+            color: var(--primary);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 15px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.15s;
+            line-height: 1;
+            display: block;
+            margin: auto;
+        }
+
+        .btn-delete:hover {
+            color: var(--red);
+            background: var(--red-light);
+        }
+
+        .btn-add-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 9px 14px;
+            border: 1.5px dashed var(--border);
+            border-radius: 9px;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            width: 100%;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .btn-add-row:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        /* Distribution bar */
+        .dist-bar-wrap {
+            background: #f1f5f9;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 32px;
+            display: flex;
+            margin-bottom: 14px;
+        }
+
+        .dist-seg {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: white;
+            transition: width 0.4s cubic-bezier(.4,0,.2,1);
+            overflow: hidden;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .dist-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-item strong { color: var(--text); }
+
+        /* Travel planner */
+        .travel-config {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+
+        .travel-config strong { color: var(--text); }
+
+        .inline-input {
+            border: 1.5px solid var(--border);
+            border-radius: 7px;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            font-weight: 700;
+            width: 60px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .inline-input:focus { border-color: var(--primary); }
+
+        .travel-goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .travel-card {
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            transition: border-color 0.15s;
+        }
+
+        .travel-card:hover { border-color: #94a3b8; }
+
+        .travel-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .travel-card-header input[type="text"] {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+            font-family: inherit;
+            background: transparent;
+        }
+
+        .travel-card-header input[type="text"]::placeholder { color: #94a3b8; }
+
+        .travel-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .travel-stat {
+            text-align: center;
+        }
+
+        .travel-stat .ts-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .travel-stat .ts-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .travel-stat.green .ts-value { color: var(--green); }
+        .travel-stat.orange .ts-value { color: var(--orange); }
+
+        .travel-budget-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .travel-budget-row .input-group {
+            max-width: 160px;
+        }
+
+        /* Annual */
+        .annual-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .annual-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .annual-card .av { font-size: 22px; font-weight: 800; color: var(--text); }
+        .annual-card .al { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .annual-card.a-income .av { color: var(--primary); }
+        .annual-card.a-savings .av { color: var(--green); }
+        .annual-card.a-travel .av { color: var(--purple); }
+
+        /* Btn primary */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 9px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .metrics { grid-template-columns: repeat(2, 1fr); }
+            .travel-stats { grid-template-columns: repeat(3, 1fr); }
+            .annual-row { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left">
+        <div class="header-icon">💰</div>
+        <div>
+            <div style="font-size:17px; font-weight:800; color:var(--text)">Sistema de Ahorro</div>
+            <div class="header-sub">Jaime & Marina · 2026</div>
+        </div>
+    </div>
+    <div class="header-date" id="current-date"></div>
+</header>
+
+<main>
+
+    <!-- Alert deficit -->
+    <div class="alert" id="alert-deficit">
+        ⚠️ <span id="alert-text">Los gastos superan los ingresos. Revisa tu presupuesto.</span>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics">
+        <div class="metric-card income">
+            <div class="metric-label">Ingresos</div>
+            <div class="metric-value" id="m-income">—</div>
+            <div class="metric-sub">al mes, entre los dos</div>
+        </div>
+        <div class="metric-card expenses">
+            <div class="metric-label">Gastos totales</div>
+            <div class="metric-value" id="m-expenses">—</div>
+            <div class="metric-sub">fijos + variables</div>
+        </div>
+        <div class="metric-card savings">
+            <div class="metric-label">Ahorro mensual</div>
+            <div class="metric-value positive" id="m-savings">—</div>
+            <div class="metric-sub" id="m-savings-sub">—</div>
+        </div>
+        <div class="metric-card free">
+            <div class="metric-label">Libre para gastar</div>
+            <div class="metric-value" id="m-free">—</div>
+            <div class="metric-sub" id="m-free-sub">después del ahorro</div>
+        </div>
+    </div>
+
+    <!-- Income + Savings goal -->
+    <div class="two-col">
+        <div class="card">
+            <div class="card-title">Ingresos mensuales netos</div>
+            <div style="display:flex; flex-direction:column; gap:14px">
+                <div class="income-person">
+                    <div class="person-label">
+                        <div class="avatar avatar-j">J</div>
+                        <span>Jaime</span>
+                        <span style="font-size:12px; color:var(--text-muted); margin-left:auto">34 años</span>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-prefix">€</span>
+                        <input type="number" id="income-jaime" min="0" step="50" placeholder="0">
+                    </div>
+                </div>
+                <div class="income-person">
+                    <div class="person-label">
+                        <div class="avatar avatar-m">M</div>
+                        <span>Marina</span>
+                        <span style="font-size:12px; color:var(--text-muted); margin-left:auto">32 años</span>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-prefix">€</span>
+                        <input type="number" id="income-marina" min="0" step="50" placeholder="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Objetivo de ahorro</div>
+            <div class="toggle-row">
+                <button class="toggle-btn active" id="btn-pct" onclick="setSavingsType('percentage')">% de ingresos</button>
+                <button class="toggle-btn" id="btn-fixed" onclick="setSavingsType('amount')">Cantidad fija</button>
+            </div>
+            <div class="input-group">
+                <span class="input-prefix" id="savings-prefix">%</span>
+                <input type="number" id="savings-value" min="0" step="1" placeholder="20">
+            </div>
+            <div class="savings-result">
+                Reservas <strong id="savings-display">—</strong> al mes para ahorro.
+            </div>
+            <div style="margin-top:12px; font-size:12px; color:var(--text-muted); background:#f8fafc; border-radius:8px; padding:10px 12px; line-height:1.6">
+                La regla 50/30/20 sugiere: <b>50%</b> necesidades, <b>30%</b> deseos, <b>20%</b> ahorro.
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses -->
+    <div class="card">
+        <div class="card-title">Gastos mensuales</div>
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-fixed" onclick="setTab('fixed')">
+                Gastos fijos <span class="tab-total" id="tab-fixed-total">—</span>
+            </button>
+            <button class="tab-btn" id="tab-variable" onclick="setTab('variable')">
+                Gastos variables <span class="tab-total" id="tab-variable-total">—</span>
+            </button>
+        </div>
+
+        <div id="panel-fixed">
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th class="right" style="width:130px">€ / mes</th>
+                        <th class="center"></th>
+                    </tr>
+                </thead>
+                <tbody id="fixed-tbody"></tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total gastos fijos</td>
+                        <td class="amount-col right" id="fixed-total">—</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button class="btn-add-row" onclick="addExpense('fixed')">+ Añadir gasto fijo</button>
+        </div>
+
+        <div id="panel-variable" style="display:none">
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th class="right" style="width:130px">€ / mes</th>
+                        <th class="center"></th>
+                    </tr>
+                </thead>
+                <tbody id="variable-tbody"></tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total gastos variables</td>
+                        <td class="amount-col right" id="variable-total">—</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button class="btn-add-row" onclick="addExpense('variable')">+ Añadir gasto variable</button>
+        </div>
+    </div>
+
+    <!-- Distribution -->
+    <div class="card">
+        <div class="card-title">Distribución de los ingresos</div>
+        <div class="dist-bar-wrap" id="dist-bar">
+            <div class="dist-seg" id="seg-fixed"    style="background:#3b82f6"></div>
+            <div class="dist-seg" id="seg-variable" style="background:#8b5cf6"></div>
+            <div class="dist-seg" id="seg-savings"  style="background:#16a34a"></div>
+            <div class="dist-seg" id="seg-free"     style="background:#f59e0b"></div>
+            <div class="dist-seg" id="seg-deficit"  style="background:#dc2626"></div>
+        </div>
+        <div class="dist-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Gastos fijos <strong id="leg-fixed">—</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Gastos variables <strong id="leg-variable">—</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div> Ahorro <strong id="leg-savings">—</strong></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Libre <strong id="leg-free">—</strong></div>
+        </div>
+    </div>
+
+    <!-- Travel planner -->
+    <div class="card">
+        <div class="section-header">
+            <div class="card-title">Planificador de viajes</div>
+            <button class="btn-primary" onclick="addTravelGoal()">+ Añadir viaje</button>
+        </div>
+
+        <div class="travel-config">
+            <span>Destinas el</span>
+            <input type="number" class="inline-input" id="travel-pct" min="0" max="100" placeholder="50">
+            <span>% del dinero libre a viajes =</span>
+            <strong id="travel-monthly">— €/mes</strong>
+            <span style="margin-left:4px; font-size:11px; color:#94a3b8">(ajusta el % según tu prioridad viajera)</span>
+        </div>
+
+        <div class="travel-goals-list" id="travel-goals-container">
+            <p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">
+                No hay viajes planificados. Pulsa "Añadir viaje" para empezar.
+            </p>
+        </div>
+    </div>
+
+    <!-- Annual projection -->
+    <div class="card">
+        <div class="card-title">Proyección anual</div>
+        <div class="annual-row">
+            <div class="annual-card a-income">
+                <div class="av" id="ann-income">—</div>
+                <div class="al">Ingresos totales</div>
+            </div>
+            <div class="annual-card">
+                <div class="av" id="ann-expenses">—</div>
+                <div class="al">Gastos totales</div>
+            </div>
+            <div class="annual-card a-savings">
+                <div class="av" id="ann-savings">—</div>
+                <div class="al">Ahorro acumulado</div>
+            </div>
+        </div>
+        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); text-align:center">
+            A este ritmo, en 5 años habréis ahorrado <strong id="savings-5y" style="color:var(--green)">—</strong>
+        </div>
+    </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // ─── Default state ────────────────────────────────────────────────────────
+    const DEFAULT_STATE = {
+        income: { jaime: 0, marina: 0 },
+        savings: { type: 'percentage', value: 20 },
+        fixedExpenses: [
+            { id: 1, name: 'Alquiler / Hipoteca', amount: 0 },
+            { id: 2, name: 'Comunidad de vecinos', amount: 0 },
+            { id: 3, name: 'Electricidad', amount: 0 },
+            { id: 4, name: 'Agua', amount: 0 },
+            { id: 5, name: 'Gas / Calefacción', amount: 0 },
+            { id: 6, name: 'Internet + Móviles', amount: 0 },
+            { id: 7, name: 'Seguros (hogar, coche...)', amount: 0 },
+            { id: 8, name: 'Suscripciones (Netflix, gym...)', amount: 0 },
+        ],
+        variableExpenses: [
+            { id: 9,  name: 'Supermercado', amount: 0 },
+            { id: 10, name: 'Restaurantes y cafés', amount: 0 },
+            { id: 11, name: 'Transporte (gasolina, transporte público)', amount: 0 },
+            { id: 12, name: 'Ropa y complementos', amount: 0 },
+            { id: 13, name: 'Salud y farmacia', amount: 0 },
+            { id: 14, name: 'Ocio y cultura', amount: 0 },
+            { id: 15, name: 'Otros gastos', amount: 0 },
+        ],
+        travelGoals: [],
+        travelPct: 50,
+        nextId: 20
+    };
+
+    // ─── State ────────────────────────────────────────────────────────────────
+    let S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+    // ─── Persistence ──────────────────────────────────────────────────────────
+    function loadState() {
+        try {
+            const raw = localStorage.getItem('ahorro-j-m-v2');
+            if (raw) S = JSON.parse(raw);
+        } catch(e) {}
+    }
+
+    let _saveTimer;
+    function schedSave() {
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(() => {
+            localStorage.setItem('ahorro-j-m-v2', JSON.stringify(S));
+            toast('Guardado');
+        }, 600);
+    }
+
+    // ─── Calculations ─────────────────────────────────────────────────────────
+    function totalIncome()    { return (S.income.jaime || 0) + (S.income.marina || 0); }
+    function totalFixed()     { return S.fixedExpenses.reduce((a, e) => a + (e.amount || 0), 0); }
+    function totalVariable()  { return S.variableExpenses.reduce((a, e) => a + (e.amount || 0), 0); }
+    function totalExpenses()  { return totalFixed() + totalVariable(); }
+
+    function savingsAmt() {
+        const inc = totalIncome();
+        return S.savings.type === 'percentage'
+            ? inc * ((S.savings.value || 0) / 100)
+            : (S.savings.value || 0);
+    }
+
+    function freeAmt() { return totalIncome() - totalExpenses() - savingsAmt(); }
+    function travelMonthly() { return Math.max(0, freeAmt()) * ((S.travelPct || 0) / 100); }
+
+    // ─── Formatting ───────────────────────────────────────────────────────────
+    function eur(n) { return Math.round(n).toLocaleString('es-ES') + ' €'; }
+    function pct(n) { return Math.round(n) + '%'; }
+
+    function targetDate(months) {
+        const d = new Date();
+        d.setMonth(d.getMonth() + months);
+        return d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    }
+
+    function esc(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // ─── Render ───────────────────────────────────────────────────────────────
+    function render() {
+        const inc = totalIncome();
+        const exp = totalExpenses();
+        const sav = savingsAmt();
+        const free = freeAmt();
+        const savPct = inc > 0 ? (sav / inc * 100) : 0;
+
+        // Metrics
+        set('m-income', eur(inc));
+        set('m-expenses', eur(exp));
+        set('m-savings', eur(sav));
+        set('m-savings-sub', pct(savPct) + ' de los ingresos');
+
+        const freeEl = el('m-free');
+        freeEl.textContent = eur(free);
+        freeEl.className = 'metric-value ' + (free < 0 ? 'negative' : free < 100 ? 'warning' : 'positive');
+        set('m-free-sub', free < 0 ? 'DEFICIT — revisa los gastos' : 'después del ahorro');
+
+        // Alert
+        const alertEl = el('alert-deficit');
+        if (inc > 0 && free < 0) {
+            alertEl.classList.add('show');
+            set('alert-text', `Deficit de ${eur(Math.abs(free))} al mes. Reduce gastos o ajusta el objetivo de ahorro.`);
+        } else {
+            alertEl.classList.remove('show');
+        }
+
+        // Savings display
+        set('savings-display', eur(sav));
+
+        // Tables
+        renderTable('fixed');
+        renderTable('variable');
+
+        // Tab totals
+        set('tab-fixed-total', eur(totalFixed()));
+        set('tab-variable-total', eur(totalVariable()));
+        set('fixed-total', eur(totalFixed()));
+        set('variable-total', eur(totalVariable()));
+
+        // Distribution bar
+        if (inc > 0) {
+            const pF = Math.max(0, totalFixed() / inc * 100);
+            const pV = Math.max(0, totalVariable() / inc * 100);
+            const pS = Math.max(0, sav / inc * 100);
+            const pFree = Math.max(0, free / inc * 100);
+            const pDef = free < 0 ? Math.min(100 - pF - pV - pS, Math.abs(free) / inc * 100) : 0;
+
+            setSeg('seg-fixed',    pF,    pF > 8 ? 'Fijos' : '');
+            setSeg('seg-variable', pV,    pV > 8 ? 'Variables' : '');
+            setSeg('seg-savings',  pS,    pS > 8 ? 'Ahorro' : '');
+            setSeg('seg-free',     pFree, pFree > 8 ? 'Libre' : '');
+            setSeg('seg-deficit',  pDef,  pDef > 8 ? 'DEFICIT' : '');
+
+            set('leg-fixed',    pct(pF));
+            set('leg-variable', pct(pV));
+            set('leg-savings',  pct(pS));
+            set('leg-free',     pct(Math.max(0, pFree)));
+        }
+
+        // Travel
+        const tm = travelMonthly();
+        set('travel-monthly', eur(tm) + '/mes');
+        renderTravel(tm);
+
+        // Annual
+        set('ann-income',   eur(inc * 12));
+        set('ann-expenses', eur(exp * 12));
+        set('ann-savings',  eur(sav * 12));
+        set('savings-5y',   eur(sav * 60));
+    }
+
+    function setSeg(id, width, label) {
+        const e = el(id);
+        e.style.width = Math.min(100, width) + '%';
+        e.textContent = label;
+    }
+
+    function renderTable(type) {
+        const arr = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
+        const tbody = el(type + '-tbody');
+        tbody.innerHTML = '';
+        arr.forEach(exp => {
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                `<td><input type="text" value="${esc(exp.name)}" placeholder="Nombre del gasto"
+                    onchange="updExp('${type}',${exp.id},'name',this.value)"></td>
+                 <td class="amount-col">
+                    <input type="number" value="${exp.amount || ''}" min="0" step="10" placeholder="0"
+                        onchange="updExp('${type}',${exp.id},'amount',+this.value)"
+                        oninput="updExp('${type}',${exp.id},'amount',+this.value)">
+                 </td>
+                 <td><button class="btn-delete" onclick="delExp('${type}',${exp.id})" title="Eliminar">✕</button></td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderTravel(monthly) {
+        const container = el('travel-goals-container');
+        if (S.travelGoals.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">No hay viajes planificados. Pulsa "Añadir viaje" para empezar.</p>';
+            return;
+        }
+        container.innerHTML = '';
+        S.travelGoals.forEach(g => {
+            const months = monthly > 0 ? Math.ceil(g.amount / monthly) : null;
+            const dateStr = months !== null ? targetDate(months) : '—';
+            const div = document.createElement('div');
+            div.className = 'travel-card';
+            div.innerHTML =
+                `<div class="travel-card-header">
+                    <span style="font-size:22px">✈️</span>
+                    <input type="text" value="${esc(g.name)}" placeholder="Nombre del viaje"
+                        onchange="updTravel(${g.id},'name',this.value)">
+                    <button class="btn-delete" onclick="delTravel(${g.id})" title="Eliminar">✕</button>
+                </div>
+                <div class="travel-budget-row" style="margin-bottom:12px">
+                    <span>Presupuesto del viaje:</span>
+                    <div class="input-group">
+                        <span class="input-prefix">€</span>
+                        <input type="number" value="${g.amount}" min="0" step="100"
+                            onchange="updTravel(${g.id},'amount',+this.value)"
+                            oninput="updTravel(${g.id},'amount',+this.value)">
+                    </div>
+                </div>
+                <div class="travel-stats">
+                    <div class="travel-stat">
+                        <div class="ts-value">${months !== null ? months : '∞'}</div>
+                        <div class="ts-label">meses ahorrando</div>
+                    </div>
+                    <div class="travel-stat green">
+                        <div class="ts-value">${dateStr}</div>
+                        <div class="ts-label">fecha estimada</div>
+                    </div>
+                    <div class="travel-stat orange">
+                        <div class="ts-value">${monthly > 0 ? eur(monthly) : '—'}</div>
+                        <div class="ts-label">ahorro/mes viajes</div>
+                    </div>
+                </div>`;
+            container.appendChild(div);
+        });
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+    function el(id) { return document.getElementById(id); }
+    function set(id, txt) { el(id).textContent = txt; }
+
+    // ─── Actions ──────────────────────────────────────────────────────────────
+    function setSavingsType(type) {
+        S.savings.type = type;
+        el('btn-pct').classList.toggle('active', type === 'percentage');
+        el('btn-fixed').classList.toggle('active', type === 'amount');
+        el('savings-prefix').textContent = type === 'percentage' ? '%' : '€';
+        const inp = el('savings-value');
+        inp.max = type === 'percentage' ? 100 : 99999;
+        inp.step = type === 'percentage' ? 1 : 50;
+        render(); schedSave();
+    }
+
+    function setTab(tab) {
+        el('tab-fixed').classList.toggle('active', tab === 'fixed');
+        el('tab-variable').classList.toggle('active', tab === 'variable');
+        el('panel-fixed').style.display = tab === 'fixed' ? '' : 'none';
+        el('panel-variable').style.display = tab === 'variable' ? '' : 'none';
+    }
+
+    function addExpense(type) {
+        const exp = { id: S.nextId++, name: '', amount: 0 };
+        (type === 'fixed' ? S.fixedExpenses : S.variableExpenses).push(exp);
+        render(); schedSave();
+        setTimeout(() => {
+            const tbody = el(type + '-tbody');
+            const last = tbody.lastElementChild;
+            if (last) last.querySelector('input[type=text]').focus();
+        }, 30);
+    }
+
+    function delExp(type, id) {
+        if (type === 'fixed')
+            S.fixedExpenses = S.fixedExpenses.filter(e => e.id !== id);
+        else
+            S.variableExpenses = S.variableExpenses.filter(e => e.id !== id);
+        render(); schedSave();
+    }
+
+    function updExp(type, id, field, value) {
+        const arr = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
+        const exp = arr.find(e => e.id === id);
+        if (exp) exp[field] = value;
+        // Only full render on amount change for totals
+        if (field === 'amount') render();
+        else {
+            set('tab-fixed-total', eur(totalFixed()));
+            set('tab-variable-total', eur(totalVariable()));
+        }
+        schedSave();
+    }
+
+    function addTravelGoal() {
+        S.travelGoals.push({ id: S.nextId++, name: 'Nuevo viaje', amount: 1500 });
+        render(); schedSave();
+    }
+
+    function delTravel(id) {
+        S.travelGoals = S.travelGoals.filter(g => g.id !== id);
+        render(); schedSave();
+    }
+
+    function updTravel(id, field, value) {
+        const g = S.travelGoals.find(g => g.id === id);
+        if (g) g[field] = value;
+        renderTravel(travelMonthly());
+        schedSave();
+    }
+
+    function toast(msg) {
+        const t = el('toast');
+        t.textContent = msg + ' ✓';
+        t.classList.add('show');
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove('show'), 1800);
+    }
+
+    // ─── Event wiring ─────────────────────────────────────────────────────────
+    function wire(id, fn) {
+        el(id).addEventListener('input', fn);
+        el(id).addEventListener('change', fn);
+    }
+
+    wire('income-jaime',  e => { S.income.jaime = +e.target.value || 0; render(); schedSave(); });
+    wire('income-marina', e => { S.income.marina = +e.target.value || 0; render(); schedSave(); });
+    wire('savings-value', e => { S.savings.value = +e.target.value || 0; render(); schedSave(); });
+    wire('travel-pct',    e => { S.travelPct = +e.target.value || 0; render(); schedSave(); });
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    loadState();
+
+    // Sync inputs from state
+    el('income-jaime').value  = S.income.jaime  || '';
+    el('income-marina').value = S.income.marina || '';
+    el('savings-value').value = S.savings.value || '';
+    el('travel-pct').value    = S.travelPct || 50;
+
+    // Init savings type buttons/display
+    el('btn-pct').classList.toggle('active', S.savings.type === 'percentage');
+    el('btn-fixed').classList.toggle('active', S.savings.type === 'amount');
+    el('savings-prefix').textContent = S.savings.type === 'percentage' ? '%' : '€';
+
+    // Date
+    el('current-date').textContent = new Date().toLocaleDateString('es-ES', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    render();
+</script>
+</body>
+</html>
