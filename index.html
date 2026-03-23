@@ -1317,9 +1317,9 @@
             html += `<button class="${cls}" onclick="selectCalDay(${goalId},'${dateStr}')">${d}</button>`;
         }
         return `<div class="cal-header">
-            <button class="cal-nav" onclick="calNavClick(${goalId},-1)">&#8249;</button>
+            <button class="cal-nav" onclick="calNavClick(event,${goalId},-1)">&#8249;</button>
             <span class="cal-title">${MESES_L[month]} ${year}</span>
-            <button class="cal-nav" onclick="calNavClick(${goalId},1)">&#8250;</button>
+            <button class="cal-nav" onclick="calNavClick(event,${goalId},1)">&#8250;</button>
         </div><div class="cal-grid">${html}</div>`;
     }
 
@@ -1349,7 +1349,8 @@
         _openCal = null;
     }
 
-    window.calNavClick = function(goalId, dir) {
+    window.calNavClick = function(e, goalId, dir) {
+        e.stopPropagation();
         const nav = _calNav[goalId] || { year: new Date().getFullYear(), month: new Date().getMonth() };
         nav.month += dir;
         if (nav.month < 0)  { nav.month = 11; nav.year--; }
