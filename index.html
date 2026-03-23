@@ -944,6 +944,78 @@
             font-weight: 700;
             text-align: right;
         }
+
+        /* ── Gráfica de evolución ─────────────────────────────────────────────── */
+        .evo-chart { margin: 16px 0 20px; }
+        .evo-bars-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            height: 90px;
+            border-bottom: 1.5px solid var(--border);
+            padding-bottom: 0;
+        }
+        .evo-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+        }
+        .evo-bar-pair {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+            width: 100%;
+            justify-content: center;
+        }
+        .evo-bar {
+            width: 42%;
+            border-radius: 3px 3px 0 0;
+            transition: height 0.4s ease;
+        }
+        .evo-bar.evo-target { background: rgba(59,130,246,0.3); }
+        .evo-bar.evo-actual { background: var(--green); }
+        .evo-bar.evo-pending { background: var(--border); }
+        .evo-labels {
+            display: flex;
+            gap: 6px;
+            margin-top: 5px;
+        }
+        .evo-col-label {
+            flex: 1;
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: capitalize;
+        }
+        .evo-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 11px;
+            color: var(--text-muted);
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .evo-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 2px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .history-current-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            background: rgba(59,130,246,0.1);
+            border-radius: 20px;
+            padding: 2px 8px;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1145,16 +1217,9 @@
     </div>
 
     <div class="card">
+        <div class="card-title">Historial y ahorro acumulado</div>
         <div id="savings-accum"></div>
-        <div class="section-header">
-            <div class="card-title" style="margin-bottom:0">Historial mensual</div>
-            <button class="btn-primary" onclick="saveMonth()">+ Guardar mes</button>
-        </div>
-        <div id="history-container" style="margin-top:14px">
-            <p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">
-                No hay meses guardados. Pulsa "+ Guardar mes" para empezar el historial.
-            </p>
-        </div>
+        <div id="history-container"></div>
     </div>
 
 </main>
@@ -1673,25 +1738,77 @@
     };
 
     // ─── Historial mensual ────────────────────────────────────────────────────
+    function autoSaveCurrentMonth() {
+        if (!S.history) S.history = [];
+        const now      = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        const existing = S.history.find(h => h.month === monthKey);
+        const entry = {
+            id:            existing ? existing.id : S.nextId++,
+            month:         monthKey,
+            label:         now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
+            income:        totalIncome(),
+            expenses:      totalExpenses(),
+            savingsTarget: savingsAmt(),
+            actualSavings: existing ? existing.actualSavings : null,
+            free:          freeAmt()
+        };
+        if (existing) {
+            Object.assign(existing, entry);
+        } else {
+            S.history.unshift(entry);
+        }
+    }
+
+    function buildChart(months) {
+        if (months.length === 0) return '';
+        const maxVal = Math.max(1, ...months.map(h => Math.max(h.savingsTarget || 0, h.actualSavings || 0)));
+        const bars = months.map(h => {
+            const tPct = Math.max(2, Math.round((h.savingsTarget || 0) / maxVal * 100));
+            const hasActual = h.actualSavings != null;
+            const aPct = hasActual ? Math.max(2, Math.round(h.actualSavings / maxVal * 100)) : 0;
+            return `<div class="evo-col">
+                <div class="evo-bar-pair">
+                    <div class="evo-bar evo-target" style="height:${tPct}%"></div>
+                    <div class="evo-bar ${hasActual ? 'evo-actual' : 'evo-pending'}" style="height:${hasActual ? aPct : 6}%"></div>
+                </div>
+            </div>`;
+        }).join('');
+        const labels = months.map(h =>
+            `<div class="evo-col-label">${h.label.substring(0,3)}</div>`
+        ).join('');
+        return `<div class="evo-chart">
+            <div class="evo-bars-wrap">${bars}</div>
+            <div class="evo-labels">${labels}</div>
+            <div class="evo-legend">
+                <span><span class="evo-dot" style="background:rgba(59,130,246,0.3)"></span>Objetivo</span>
+                <span><span class="evo-dot" style="background:var(--green)"></span>Real</span>
+            </div>
+        </div>`;
+    }
+
     function renderHistory() {
+        autoSaveCurrentMonth();
         const container = el('history-container');
         const accumEl   = el('savings-accum');
         if (!container || !accumEl) return;
+
         const history = S.history || [];
+        const now = new Date();
+        const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
-        if (history.length === 0) {
-            accumEl.innerHTML = '';
-            container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">No hay meses guardados. Pulsa "+ Guardar mes" para empezar el historial.</p>`;
-            return;
-        }
-
-        const totalTarget = history.reduce((a, h) => a + (h.savingsTarget || 0), 0);
-        const totalActual = history.reduce((a, h) => a + (h.actualSavings != null ? h.actualSavings : 0), 0);
+        // Acumulado: solo meses con ahorro real introducido (excl. mes actual)
+        const pastWithActual = history.filter(h => h.month !== currentMonthKey && h.actualSavings != null);
+        const totalTarget = pastWithActual.reduce((a, h) => a + (h.savingsTarget || 0), 0);
+        const totalActual = pastWithActual.reduce((a, h) => a + (h.actualSavings || 0), 0);
         const barPct = totalTarget > 0 ? Math.min(100, Math.round(totalActual / totalTarget * 100)) : 0;
         const diff   = totalActual - totalTarget;
 
-        accumEl.innerHTML = `
-            <div class="accum-summary">
+        const chartMonths = history.slice(0, 6).slice().reverse();
+
+        let accumHTML = '';
+        if (pastWithActual.length > 0) {
+            accumHTML = `<div class="accum-summary">
                 <div class="accum-row">
                     <span>Ahorro real acumulado</span>
                     <span class="accum-val green">${eur(totalActual)}</span>
@@ -1707,12 +1824,19 @@
                     ${diff >= 0 ? '+' : ''}${eur(diff)} ${diff >= 0 ? 'por encima del objetivo' : 'por debajo del objetivo'}
                 </div>
             </div>`;
+        }
 
-        container.innerHTML = history.map(h => `
-            <div class="history-entry">
+        accumEl.innerHTML = accumHTML + buildChart(chartMonths);
+
+        container.innerHTML = history.map(h => {
+            const isCurrent = h.month === currentMonthKey;
+            return `<div class="history-entry">
                 <div class="history-entry-header">
-                    <span class="history-month">${h.label}</span>
-                    <button class="btn-delete" onclick="delHistoryEntry(${h.id})">✕</button>
+                    <div>
+                        <span class="history-month">${h.label}</span>
+                        ${isCurrent ? '<span class="history-current-badge">en curso</span>' : ''}
+                    </div>
+                    ${!isCurrent ? `<button class="btn-delete" onclick="delHistoryEntry(${h.id})">✕</button>` : ''}
                 </div>
                 <div class="history-grid">
                     <div class="hg-cell">
@@ -1735,31 +1859,9 @@
                             onchange="updActualSavings(${h.id}, this.value)">
                     </div>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
-
-    window.saveMonth = function() {
-        if (!S.history) S.history = [];
-        const now      = new Date();
-        const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        if (S.history.find(h => h.month === monthKey)) {
-            toast('Este mes ya está guardado');
-            return;
-        }
-        S.history.unshift({
-            id:            S.nextId++,
-            month:         monthKey,
-            label:         now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
-            income:        totalIncome(),
-            expenses:      totalExpenses(),
-            savingsTarget: savingsAmt(),
-            actualSavings: null,
-            free:          freeAmt()
-        });
-        renderHistory();
-        schedSave();
-        toast('Mes guardado ✓');
-    };
 
     window.updActualSavings = function(id, value) {
         const entry = (S.history || []).find(h => h.id === id);
