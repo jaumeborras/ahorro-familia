@@ -73,3 +73,6 @@ Sección para planificar viajes con:
 | 2026-03-23 | Reescribir lógica `_calOutside` para evitar acumulación de listeners — fix definitivo del cierre del calendario al navegar meses |
 | 2026-03-23 | Título del header cambiado a "Familia Borrás Coll", subtítulo eliminado, sync y fecha apilados verticalmente |
 | 2026-03-23 | Eliminado el badge de importe en las pestañas Gastos fijos / Gastos variables |
+| 2026-03-23 | Icono de pantalla de inicio iOS: bolsa de dinero con símbolo €, luego rediseñado como casa + bolsa |
+| 2026-03-23 | Calendario móvil: anclado a right:0 para que no se salga de pantalla + max-width seguro |
+| 2026-03-23 | Eliminado texto "Seleccionar fecha" del botón de fecha para alinear con campo presupuesto |
