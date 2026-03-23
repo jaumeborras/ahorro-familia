@@ -71,3 +71,5 @@ Sección para planificar viajes con:
 | 2026-03-23 | Reemplazar input date por calendario personalizado estilo Apple |
 | 2026-03-23 | Corregir cierre del calendario al navegar entre meses (x2 intentos) |
 | 2026-03-23 | Reescribir lógica `_calOutside` para evitar acumulación de listeners — fix definitivo del cierre del calendario al navegar meses |
+| 2026-03-23 | Título del header cambiado a "Familia Borrás Coll", subtítulo eliminado, sync y fecha apilados verticalmente |
+| 2026-03-23 | Eliminado el badge de importe en las pestañas Gastos fijos / Gastos variables |
