@@ -664,13 +664,14 @@
         .cal-popup {
             position: absolute;
             top: calc(100% + 8px);
-            left: 0;
+            right: 0;
             background: white;
             border-radius: 18px;
             box-shadow: 0 12px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
             padding: 18px;
             z-index: 100;
             width: 290px;
+            max-width: calc(100vw - 32px);
             animation: calIn 0.15s ease;
         }
         @keyframes calIn {
@@ -1265,7 +1266,7 @@
     const _calNav = {};
 
     function calTriggerHTML(goalId, selectedDate) {
-        let label = 'Seleccionar fecha';
+        let label = '';
         if (selectedDate) {
             const d = new Date(selectedDate + 'T00:00:00');
             label = d.toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
