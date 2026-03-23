@@ -958,10 +958,8 @@
         .evo-col {
             flex: 1;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            justify-content: flex-end;
+            align-items: flex-end;
+            justify-content: center;
         }
         .evo-bar-pair {
             display: flex;
@@ -1762,15 +1760,16 @@
 
     function buildChart(months) {
         if (months.length === 0) return '';
+        const H = 82; // px — altura útil del área de barras
         const maxVal = Math.max(1, ...months.map(h => Math.max(h.savingsTarget || 0, h.actualSavings || 0)));
         const bars = months.map(h => {
-            const tPct = Math.max(2, Math.round((h.savingsTarget || 0) / maxVal * 100));
+            const tH = Math.max(4, Math.round((h.savingsTarget || 0) / maxVal * H));
             const hasActual = h.actualSavings != null;
-            const aPct = hasActual ? Math.max(2, Math.round(h.actualSavings / maxVal * 100)) : 0;
+            const aH = hasActual ? Math.max(4, Math.round(h.actualSavings / maxVal * H)) : 6;
             return `<div class="evo-col">
                 <div class="evo-bar-pair">
-                    <div class="evo-bar evo-target" style="height:${tPct}%"></div>
-                    <div class="evo-bar ${hasActual ? 'evo-actual' : 'evo-pending'}" style="height:${hasActual ? aPct : 6}%"></div>
+                    <div class="evo-bar evo-target" style="height:${tH}px"></div>
+                    <div class="evo-bar ${hasActual ? 'evo-actual' : 'evo-pending'}" style="height:${aH}px"></div>
                 </div>
             </div>`;
         }).join('');
