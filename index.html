@@ -641,6 +641,116 @@
             user-select: none;
         }
 
+        /* ── Custom calendar picker ── */
+        .date-trigger {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            outline: none;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .date-trigger:hover, .date-trigger.open {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .date-trigger .dt-icon { font-size: 16px; flex-shrink: 0; }
+        .date-trigger .dt-label { flex: 1; }
+        .date-trigger .dt-arrow { color: #94a3b8; font-size: 12px; transition: transform 0.15s; }
+        .date-trigger.open .dt-arrow { transform: rotate(180deg); }
+
+        .cal-popup {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06);
+            padding: 18px;
+            z-index: 100;
+            width: 290px;
+            animation: calIn 0.15s ease;
+        }
+        @keyframes calIn {
+            from { opacity:0; transform:translateY(-6px) scale(.97); }
+            to   { opacity:1; transform:translateY(0)   scale(1); }
+        }
+        .cal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .cal-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .cal-nav {
+            width: 30px; height: 30px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: var(--text);
+            transition: background 0.12s;
+            line-height: 1;
+            font-family: inherit;
+        }
+        .cal-nav:hover { background: #e2e8f0; }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .cal-weekday {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            padding: 4px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .cal-day {
+            aspect-ratio: 1;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            border: none;
+            background: none;
+            transition: background 0.1s, color 0.1s;
+            font-family: inherit;
+        }
+        .cal-day:hover:not(.past):not(.empty) { background: #f0f7ff; color: var(--primary); }
+        .cal-day.today { font-weight: 800; color: var(--primary); }
+        .cal-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 3px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        .cal-day.today { position: relative; }
+        .cal-day.selected { background: var(--primary) !important; color: white !important; font-weight: 700; }
+        .cal-day.past { color: #cbd5e1; cursor: default; pointer-events: none; }
+        .cal-day.empty { pointer-events: none; }
+
         .countdown-placeholder {
             text-align: center;
             color: #475569;
@@ -1163,6 +1273,109 @@
                 <div class="ts-label">estado</div>
             </div>`;
     }
+    // ─── Custom calendar picker ───────────────────────────────────────────────
+    const MESES_L = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    let _openCal = null;
+    const _calNav = {};
+
+    function calTriggerHTML(goalId, selectedDate) {
+        let label = 'Seleccionar fecha';
+        if (selectedDate) {
+            const d = new Date(selectedDate + 'T00:00:00');
+            label = d.toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
+        }
+        return `<button class="date-trigger" id="dtrg-${goalId}" onclick="toggleCal(${goalId})">
+            <span class="dt-icon">📅</span>
+            <span class="dt-label">${label}</span>
+            <span class="dt-arrow">▾</span>
+        </button>
+        <div class="cal-popup" id="cal-${goalId}" style="display:none"></div>`;
+    }
+
+    function buildCalGrid(goalId) {
+        const g = S.travelGoals.find(g => g.id === goalId);
+        if (!_calNav[goalId]) {
+            const ref = g && g.startDate ? new Date(g.startDate + 'T00:00:00') : new Date();
+            _calNav[goalId] = { year: ref.getFullYear(), month: ref.getMonth() };
+        }
+        const { year, month } = _calNav[goalId];
+        const sel   = g ? g.startDate : '';
+        const today = new Date(); today.setHours(0,0,0,0);
+        const first = new Date(year, month, 1);
+        const last  = new Date(year, month + 1, 0);
+        const startDow = (first.getDay() + 6) % 7;
+        const DAYS = ['L','M','X','J','V','S','D'];
+        let html = DAYS.map(d => `<div class="cal-weekday">${d}</div>`).join('');
+        html += Array(startDow).fill('<div class="cal-day empty"></div>').join('');
+        for (let d = 1; d <= last.getDate(); d++) {
+            const date    = new Date(year, month, d);
+            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const isPast  = date < today;
+            const isToday = date.getTime() === today.getTime();
+            const isSel   = dateStr === sel;
+            let cls = 'cal-day' + (isSel ? ' selected' : isToday ? ' today' : isPast ? ' past' : '');
+            html += `<button class="${cls}" onclick="selectCalDay(${goalId},'${dateStr}')">${d}</button>`;
+        }
+        return `<div class="cal-header">
+            <button class="cal-nav" onclick="calNavClick(${goalId},-1)">&#8249;</button>
+            <span class="cal-title">${MESES_L[month]} ${year}</span>
+            <button class="cal-nav" onclick="calNavClick(${goalId},1)">&#8250;</button>
+        </div><div class="cal-grid">${html}</div>`;
+    }
+
+    window.toggleCal = function(goalId) {
+        if (_openCal === goalId) { closeCal(goalId); return; }
+        if (_openCal !== null) closeCal(_openCal);
+        _openCal = goalId;
+        const popup = document.getElementById('cal-' + goalId);
+        if (!popup) return;
+        popup.innerHTML = buildCalGrid(goalId);
+        popup.style.display = 'block';
+        document.getElementById('dtrg-' + goalId)?.classList.add('open');
+        setTimeout(() => document.addEventListener('click', _calOutside), 10);
+    };
+
+    function _calOutside(e) {
+        if (_openCal === null) return;
+        const popup = document.getElementById('cal-' + _openCal);
+        const trig  = document.getElementById('dtrg-' + _openCal);
+        if (popup?.contains(e.target) || trig?.contains(e.target)) {
+            setTimeout(() => document.addEventListener('click', _calOutside), 10);
+        } else { closeCal(_openCal); }
+    }
+
+    function closeCal(id) {
+        const p = document.getElementById('cal-' + id);
+        if (p) p.style.display = 'none';
+        document.getElementById('dtrg-' + id)?.classList.remove('open');
+        _openCal = null;
+    }
+
+    window.calNavClick = function(goalId, dir) {
+        const nav = _calNav[goalId] || { year: new Date().getFullYear(), month: new Date().getMonth() };
+        nav.month += dir;
+        if (nav.month < 0)  { nav.month = 11; nav.year--; }
+        if (nav.month > 11) { nav.month = 0;  nav.year++; }
+        _calNav[goalId] = nav;
+        const popup = document.getElementById('cal-' + goalId);
+        if (popup) popup.innerHTML = buildCalGrid(goalId);
+    };
+
+    window.selectCalDay = function(goalId, dateStr) {
+        const g = S.travelGoals.find(g => g.id === goalId);
+        if (!g) return;
+        g.startDate = dateStr;
+        const d = new Date(dateStr + 'T00:00:00');
+        const lbl = document.querySelector('#dtrg-' + goalId + ' .dt-label');
+        if (lbl) lbl.textContent = d.toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
+        const cdWrap  = document.getElementById('cd-wrap-'  + goalId);
+        if (cdWrap)  cdWrap.innerHTML  = countdownHTML(g);
+        const statsEl = document.getElementById('ts-' + goalId);
+        if (statsEl) statsEl.innerHTML = travelStatsHTML(g, travelMonthly());
+        closeCal(goalId);
+        schedSave();
+    };
+
     function countdownHTML(g) {
         if (!g.startDate) {
             return `<div class="countdown-placeholder">Indica la fecha de salida para ver la cuenta atrás ✈️</div>`;
@@ -1196,7 +1409,7 @@
                         onchange="updTravelName(${g.id}, this.value)">
                     <button class="btn-delete" onclick="delTravel(${g.id})">✕</button>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px">
                     <div>
                         <div class="field-label">Presupuesto</div>
                         <div class="input-group">
@@ -1205,15 +1418,9 @@
                                 onchange="updTravelAmt(${g.id}, +this.value)">
                         </div>
                     </div>
-                    <div>
+                    <div style="position:relative">
                         <div class="field-label">Fecha de salida</div>
-                        <input type="date" class="date-input" value="${g.startDate || ''}"
-                            onchange="updTravelStartDate(${g.id}, this.value)">
-                    </div>
-                    <div>
-                        <div class="field-label">Fecha de vuelta</div>
-                        <input type="date" class="date-input" value="${g.endDate || ''}"
-                            onchange="updTravelEndDate(${g.id}, this.value)">
+                        ${calTriggerHTML(g.id, g.startDate)}
                     </div>
                 </div>
                 <div id="cd-wrap-${g.id}">${countdownHTML(g)}</div>
@@ -1282,7 +1489,7 @@
 
     window.addTravelGoal = function() {
         if (!S.travelGoals) S.travelGoals = [];
-        S.travelGoals.push({ id: S.nextId++, name: '', amount: 0, startDate: '', endDate: '' });
+        S.travelGoals.push({ id: S.nextId++, name: '', amount: 0, startDate: '' });
         render(); schedSave();
     };
 
@@ -1297,24 +1504,6 @@
         schedSave();
     };
 
-    window.updTravelStartDate = function(id, value) {
-        const g = S.travelGoals.find(g => g.id === id);
-        if (!g) return;
-        g.startDate = value;
-        // Update countdown wrapper and stats without rebuilding the whole card
-        const cdWrap = document.getElementById('cd-wrap-' + id);
-        if (cdWrap) cdWrap.innerHTML = countdownHTML(g);
-        const statsEl = document.getElementById('ts-' + id);
-        if (statsEl) statsEl.innerHTML = travelStatsHTML(g, travelMonthly());
-        schedSave();
-    };
-
-    window.updTravelEndDate = function(id, value) {
-        const g = S.travelGoals.find(g => g.id === id);
-        if (!g) return;
-        g.endDate = value;
-        schedSave();
-    };
 
     window.updTravelAmt = function(id, value) {
         const g = S.travelGoals.find(g => g.id === id);
