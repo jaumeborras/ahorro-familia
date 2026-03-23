@@ -838,8 +838,8 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-    import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
-    import { getDatabase, ref, set, onValue }         from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+    import { initializeApp }                           from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getDatabase, ref, set as fbSet, onValue } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
     // ─── Firebase ─────────────────────────────────────────────────────────────
     const app = initializeApp({
@@ -892,7 +892,7 @@
         setSyncState('saving');
         _saveTimer = setTimeout(() => {
             _ignoreNext = true;
-            set(estadoRef, S)
+            fbSet(estadoRef, S)
                 .then(() => {
                     setSyncState('connected');
                     toast('Guardado en la nube');
@@ -985,31 +985,31 @@
         const free = freeAmt();
         const savPct = inc > 0 ? (sav / inc * 100) : 0;
 
-        set('m-income',   eur(inc));
-        set('m-expenses', eur(exp));
-        set('m-savings',  eur(sav));
-        set('m-savings-sub', pct(savPct) + ' de los ingresos');
+        setText('m-income',   eur(inc));
+        setText('m-expenses', eur(exp));
+        setText('m-savings',  eur(sav));
+        setText('m-savings-sub', pct(savPct) + ' de los ingresos');
 
         const freeEl = el('m-free');
         freeEl.textContent = eur(free);
         freeEl.className = 'metric-value ' + (free < 0 ? 'negative' : free < 100 ? 'warning' : 'positive');
-        set('m-free-sub', free < 0 ? 'DEFICIT — revisa los gastos' : 'después del ahorro');
+        setText('m-free-sub', free < 0 ? 'DEFICIT — revisa los gastos' : 'después del ahorro');
 
         const alertEl = el('alert-deficit');
         if (inc > 0 && free < 0) {
             alertEl.classList.add('show');
-            set('alert-text', `Deficit de ${eur(Math.abs(free))} al mes. Reduce gastos o ajusta el objetivo de ahorro.`);
+            setText('alert-text', `Deficit de ${eur(Math.abs(free))} al mes. Reduce gastos o ajusta el objetivo de ahorro.`);
         } else {
             alertEl.classList.remove('show');
         }
 
-        set('savings-display', eur(sav));
+        setText('savings-display', eur(sav));
         renderTable('fixed');
         renderTable('variable');
-        set('tab-fixed-total',    eur(totalFixed()));
-        set('tab-variable-total', eur(totalVariable()));
-        set('fixed-total',        eur(totalFixed()));
-        set('variable-total',     eur(totalVariable()));
+        setText('tab-fixed-total',    eur(totalFixed()));
+        setText('tab-variable-total', eur(totalVariable()));
+        setText('fixed-total',        eur(totalFixed()));
+        setText('variable-total',     eur(totalVariable()));
 
         if (inc > 0) {
             const pF    = Math.max(0, totalFixed()    / inc * 100);
@@ -1024,20 +1024,20 @@
             setSeg('seg-free',     pFree, pFree > 8 ? 'Libre' : '');
             setSeg('seg-deficit',  pDef,  pDef > 8 ? 'DEFICIT' : '');
 
-            set('leg-fixed',    pct(pF));
-            set('leg-variable', pct(pV));
-            set('leg-savings',  pct(pS));
-            set('leg-free',     pct(Math.max(0, pFree)));
+            setText('leg-fixed',    pct(pF));
+            setText('leg-variable', pct(pV));
+            setText('leg-savings',  pct(pS));
+            setText('leg-free',     pct(Math.max(0, pFree)));
         }
 
         const tm = travelMonthly();
-        set('travel-monthly', eur(tm) + '/mes');
+        setText('travel-monthly', eur(tm) + '/mes');
         renderTravel(tm);
 
-        set('ann-income',   eur(inc * 12));
-        set('ann-expenses', eur(exp * 12));
-        set('ann-savings',  eur(sav * 12));
-        set('savings-5y',   eur(sav * 60));
+        setText('ann-income',   eur(inc * 12));
+        setText('ann-expenses', eur(exp * 12));
+        setText('ann-savings',  eur(sav * 12));
+        setText('savings-5y',   eur(sav * 60));
     }
 
     function setSeg(id, width, label) {
@@ -1117,7 +1117,7 @@
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
     function el(id)       { return document.getElementById(id); }
-    function set(id, txt) { el(id).textContent = txt; }
+    function setText(id, txt) { el(id).textContent = txt; }
 
     // ─── Actions (exposed to window for inline handlers) ──────────────────────
     window.setSavingsType = function(type) {
