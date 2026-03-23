@@ -799,12 +799,6 @@
             <div class="card-title">Planificador de viajes</div>
             <button class="btn-primary" onclick="addTravelGoal()">+ Añadir viaje</button>
         </div>
-        <div class="travel-config">
-            <span>Destinas el</span>
-            <input type="number" class="inline-input" id="travel-pct" min="0" max="100" placeholder="50">
-            <span>% del dinero libre a viajes =</span>
-            <strong id="travel-monthly">— €/mes</strong>
-        </div>
         <div class="travel-goals-list" id="travel-goals-container">
             <p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">
                 No hay viajes planificados. Pulsa "Añadir viaje" para empezar.
@@ -928,7 +922,6 @@
         if (active !== el('income-jaime'))  el('income-jaime').value  = S.income.jaime  || '';
         if (active !== el('income-marina')) el('income-marina').value = S.income.marina || '';
         if (active !== el('savings-value')) el('savings-value').value = S.savings.value || '';
-        if (active !== el('travel-pct'))    el('travel-pct').value    = S.travelPct     || 50;
 
         el('btn-pct').classList.toggle('active',   S.savings.type === 'percentage');
         el('btn-fixed').classList.toggle('active', S.savings.type === 'amount');
@@ -1030,9 +1023,7 @@
             setText('leg-free',     pct(Math.max(0, pFree)));
         }
 
-        const tm = travelMonthly();
-        setText('travel-monthly', eur(tm) + '/mes');
-        renderTravel(tm);
+        renderTravel(travelMonthly());
 
         setText('ann-income',   eur(inc * 12));
         setText('ann-expenses', eur(exp * 12));
@@ -1070,6 +1061,26 @@
         });
     }
 
+    const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const SELECT_STYLE = `style="flex:1; border:1.5px solid var(--border); border-radius:10px; padding:10px 8px; font-size:13px; font-family:inherit; color:var(--text); background:white; outline:none; cursor:pointer; appearance:none; -webkit-appearance:none; background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%2364748b%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22/></svg>'); background-repeat:no-repeat; background-position:right 8px center; padding-right:26px;"`;
+
+    function monthSelect(id, targetDate) {
+        const currentMonth = targetDate ? parseInt(targetDate.split('-')[1]) : 0;
+        const options = MESES.map((m, i) =>
+            `<option value="${i+1}" ${currentMonth === i+1 ? 'selected' : ''}>${m}</option>`
+        ).join('');
+        return `<select ${SELECT_STYLE} onchange="updTravelDatePart(${id},'month',this.value)"><option value="">Mes</option>${options}</select>`;
+    }
+
+    function yearSelect(id, targetDate) {
+        const currentYear = targetDate ? parseInt(targetDate.split('-')[0]) : 0;
+        const thisYear = new Date().getFullYear();
+        const options = Array.from({length: 10}, (_, i) => thisYear + i).map(y =>
+            `<option value="${y}" ${currentYear === y ? 'selected' : ''}>${y}</option>`
+        ).join('');
+        return `<select ${SELECT_STYLE} onchange="updTravelDatePart(${id},'year',this.value)"><option value="">Año</option>${options}</select>`;
+    }
+
     function renderTravel(monthly) {
         const container = el('travel-goals-container');
         if (!S.travelGoals || S.travelGoals.length === 0) {
@@ -1094,10 +1105,11 @@
                 ? Math.ceil(g.amount / monthsRemaining)
                 : null;
 
-            // On track?
-            const onTrack = needed !== null && monthly >= needed;
+            // On track? Compare needed/month vs total free money
+            const freePerMonth = Math.max(0, freeAmt());
+            const onTrack = needed !== null && freePerMonth >= needed;
             const statusColor = needed === null ? '#94a3b8' : (onTrack ? 'var(--green)' : 'var(--red)');
-            const statusText  = needed === null ? 'Indica una fecha' : (onTrack ? '¡Vais bien!' : 'Necesitáis ahorrar más');
+            const statusText  = needed === null ? 'Indica destino y fecha' : (onTrack ? '¡Vais bien!' : 'Necesitáis ahorrar más');
 
             const div = document.createElement('div');
             div.className = 'travel-card';
@@ -1119,10 +1131,10 @@
                     </div>
                     <div>
                         <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:5px">Fecha del viaje</div>
-                        <input type="month" value="${g.targetDate || ''}"
-                            onchange="updTravelDate(${g.id}, this.value)"
-                            style="width:100%; border:1.5px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--text); outline:none; transition:border-color .15s;"
-                            onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                        <div style="display:flex; gap:6px">
+                            ${monthSelect(g.id, g.targetDate)}
+                            ${yearSelect(g.id, g.targetDate)}
+                        </div>
                     </div>
                 </div>
                 <div class="travel-stats">
@@ -1223,6 +1235,17 @@
         schedSave();
     };
 
+    window.updTravelDatePart = function(id, part, value) {
+        const g = S.travelGoals.find(g => g.id === id);
+        if (!g) return;
+        const parts = (g.targetDate || '-').split('-');
+        const y = part === 'year'  ? value : (parts[0] || '');
+        const m = part === 'month' ? String(value).padStart(2, '0') : (parts[1] || '');
+        g.targetDate = (y && m) ? `${y}-${m}` : '';
+        renderTravel(travelMonthly());
+        schedSave();
+    };
+
     window.updTravelAmt = function(id, value) {
         const g = S.travelGoals.find(g => g.id === id);
         if (g) g.amount = value;
@@ -1248,7 +1271,6 @@
     wire('income-jaime',  e => { S.income.jaime  = +e.target.value || 0; render(); schedSave(); });
     wire('income-marina', e => { S.income.marina = +e.target.value || 0; render(); schedSave(); });
     wire('savings-value', e => { S.savings.value = +e.target.value || 0; render(); schedSave(); });
-    wire('travel-pct',    e => { S.travelPct     = +e.target.value || 0; render(); schedSave(); });
 
     // ─── Init ─────────────────────────────────────────────────────────────────
     el('current-date').textContent = new Date().toLocaleDateString('es-ES', {
