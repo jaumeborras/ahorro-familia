@@ -575,6 +575,82 @@
 
         .travel-budget-row .input-group { max-width: 160px; }
 
+        .date-input {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            background: white;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            cursor: pointer;
+        }
+
+        .date-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .countdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 12px;
+            padding: 16px 12px;
+            margin-bottom: 12px;
+        }
+
+        .cd-unit { text-align: center; min-width: 52px; }
+
+        .cd-val {
+            font-size: 30px;
+            font-weight: 800;
+            color: white;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .cd-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .cd-sep {
+            font-size: 22px;
+            font-weight: 800;
+            color: #334155;
+            padding-bottom: 14px;
+            user-select: none;
+        }
+
+        .countdown-placeholder {
+            text-align: center;
+            color: #475569;
+            font-size: 13px;
+            padding: 14px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
         .annual-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
         .annual-card {
@@ -1061,12 +1137,10 @@
         });
     }
 
-    const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-
     function travelStatsHTML(g, monthly) {
         let monthsRemaining = null;
-        if (g.targetMonth && g.targetYear) {
-            const target = new Date(g.targetYear, g.targetMonth - 1, 1);
+        if (g.startDate) {
+            const target = new Date(g.startDate + 'T00:00:00');
             const now    = new Date();
             monthsRemaining = Math.max(0, (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth()));
         }
@@ -1089,23 +1163,19 @@
                 <div class="ts-label">estado</div>
             </div>`;
     }
-    const SELECT_STYLE = `style="flex:1; border:1.5px solid var(--border); border-radius:10px; padding:10px 8px; font-size:13px; font-family:inherit; color:var(--text); background:white; outline:none; cursor:pointer; appearance:none; -webkit-appearance:none; background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%2364748b%22 stroke-width=%221.5%22 fill=%22none%22 stroke-linecap=%22round%22/></svg>'); background-repeat:no-repeat; background-position:right 8px center; padding-right:26px;"`;
-
-    function monthSelect(id, g) {
-        const current = g.targetMonth || 0;
-        const options = MESES.map((m, i) =>
-            `<option value="${i+1}" ${current === i+1 ? 'selected' : ''}>${m}</option>`
-        ).join('');
-        return `<select ${SELECT_STYLE} onchange="updTravelDatePart(${id},'month',this.value)"><option value="">Mes</option>${options}</select>`;
-    }
-
-    function yearSelect(id, g) {
-        const current  = g.targetYear || 0;
-        const thisYear = new Date().getFullYear();
-        const options  = Array.from({length: 10}, (_, i) => thisYear + i).map(y =>
-            `<option value="${y}" ${current === y ? 'selected' : ''}>${y}</option>`
-        ).join('');
-        return `<select ${SELECT_STYLE} onchange="updTravelDatePart(${id},'year',this.value)"><option value="">Año</option>${options}</select>`;
+    function countdownHTML(g) {
+        if (!g.startDate) {
+            return `<div class="countdown-placeholder">Indica la fecha de salida para ver la cuenta atrás ✈️</div>`;
+        }
+        return `<div class="countdown">
+            <div class="cd-unit"><div class="cd-val" id="cd-d-${g.id}">--</div><div class="cd-label">días</div></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><div class="cd-val" id="cd-h-${g.id}">--</div><div class="cd-label">horas</div></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><div class="cd-val" id="cd-m-${g.id}">--</div><div class="cd-label">min</div></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><div class="cd-val" id="cd-s-${g.id}">--</div><div class="cd-label">seg</div></div>
+        </div>`;
     }
 
     function renderTravel(monthly) {
@@ -1126,9 +1196,9 @@
                         onchange="updTravelName(${g.id}, this.value)">
                     <button class="btn-delete" onclick="delTravel(${g.id})">✕</button>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px">
                     <div>
-                        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:5px">Presupuesto</div>
+                        <div class="field-label">Presupuesto</div>
                         <div class="input-group">
                             <span class="input-prefix">€</span>
                             <input type="number" value="${g.amount || ''}" min="0" step="100" placeholder="0"
@@ -1136,13 +1206,17 @@
                         </div>
                     </div>
                     <div>
-                        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:5px">Fecha del viaje</div>
-                        <div style="display:flex; gap:6px">
-                            ${monthSelect(g.id, g)}
-                            ${yearSelect(g.id, g)}
-                        </div>
+                        <div class="field-label">Fecha de salida</div>
+                        <input type="date" class="date-input" value="${g.startDate || ''}"
+                            onchange="updTravelStartDate(${g.id}, this.value)">
+                    </div>
+                    <div>
+                        <div class="field-label">Fecha de vuelta</div>
+                        <input type="date" class="date-input" value="${g.endDate || ''}"
+                            onchange="updTravelEndDate(${g.id}, this.value)">
                     </div>
                 </div>
+                <div id="cd-wrap-${g.id}">${countdownHTML(g)}</div>
                 <div class="travel-stats" id="ts-${g.id}">
                     ${travelStatsHTML(g, monthly)}
                 </div>`;
@@ -1208,7 +1282,7 @@
 
     window.addTravelGoal = function() {
         if (!S.travelGoals) S.travelGoals = [];
-        S.travelGoals.push({ id: S.nextId++, name: '', amount: 0, targetMonth: null, targetYear: null });
+        S.travelGoals.push({ id: S.nextId++, name: '', amount: 0, startDate: '', endDate: '' });
         render(); schedSave();
     };
 
@@ -1223,21 +1297,22 @@
         schedSave();
     };
 
-    window.updTravelDate = function(id, value) {
+    window.updTravelStartDate = function(id, value) {
         const g = S.travelGoals.find(g => g.id === id);
-        if (g) g.targetDate = value;
-        renderTravel(travelMonthly());
+        if (!g) return;
+        g.startDate = value;
+        // Update countdown wrapper and stats without rebuilding the whole card
+        const cdWrap = document.getElementById('cd-wrap-' + id);
+        if (cdWrap) cdWrap.innerHTML = countdownHTML(g);
+        const statsEl = document.getElementById('ts-' + id);
+        if (statsEl) statsEl.innerHTML = travelStatsHTML(g, travelMonthly());
         schedSave();
     };
 
-    window.updTravelDatePart = function(id, part, value) {
+    window.updTravelEndDate = function(id, value) {
         const g = S.travelGoals.find(g => g.id === id);
         if (!g) return;
-        if (part === 'month') g.targetMonth = value ? parseInt(value) : null;
-        if (part === 'year')  g.targetYear  = value ? parseInt(value) : null;
-        // Only update the stats div — don't re-render the whole card (would reset the selects)
-        const statsEl = document.getElementById('ts-' + id);
-        if (statsEl) statsEl.innerHTML = travelStatsHTML(g, travelMonthly());
+        g.endDate = value;
         schedSave();
     };
 
@@ -1266,6 +1341,33 @@
     wire('income-jaime',  e => { S.income.jaime  = +e.target.value || 0; render(); schedSave(); });
     wire('income-marina', e => { S.income.marina = +e.target.value || 0; render(); schedSave(); });
     wire('savings-value', e => { S.savings.value = +e.target.value || 0; render(); schedSave(); });
+
+    // ─── Countdown interval ───────────────────────────────────────────────────
+    function tickCountdowns() {
+        if (!S.travelGoals) return;
+        const pad = n => String(n).padStart(2, '0');
+        S.travelGoals.forEach(g => {
+            if (!g.startDate) return;
+            const target = new Date(g.startDate + 'T00:00:00');
+            const diff   = target - new Date();
+            const dEl = document.getElementById('cd-d-' + g.id);
+            if (!dEl) return;
+            if (diff <= 0) {
+                dEl.textContent = '00';
+                ['cd-h-','cd-m-','cd-s-'].forEach(p => { const e = document.getElementById(p + g.id); if(e) e.textContent = '00'; });
+                return;
+            }
+            const days  = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const mins  = Math.floor((diff % 3600000)  / 60000);
+            const secs  = Math.floor((diff % 60000)    / 1000);
+            dEl.textContent = pad(days);
+            const hEl = document.getElementById('cd-h-' + g.id); if(hEl) hEl.textContent = pad(hours);
+            const mEl = document.getElementById('cd-m-' + g.id); if(mEl) mEl.textContent = pad(mins);
+            const sEl = document.getElementById('cd-s-' + g.id); if(sEl) sEl.textContent = pad(secs);
+        });
+    }
+    setInterval(tickCountdowns, 1000);
 
     // ─── Init ─────────────────────────────────────────────────────────────────
     el('current-date').textContent = new Date().toLocaleDateString('es-ES', {
