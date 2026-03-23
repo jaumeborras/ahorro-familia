@@ -805,6 +805,145 @@
         }
 
         .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ── Modo oscuro ─────────────────────────────────────────────────────── */
+        body.dark {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --green-light: rgba(22,163,74,0.18);
+            --red-light:   rgba(220,38,38,0.18);
+            --orange-light:rgba(217,119,6,0.18);
+            --shadow: 0 1px 8px rgba(0,0,0,0.4);
+        }
+        body.dark header                    { background: var(--card); border-bottom-color: var(--border); }
+        body.dark .toggle-btn               { background: var(--card); color: var(--text-muted); }
+        body.dark .toggle-btn.active        { background: rgba(59,130,246,0.15); }
+        body.dark .input-prefix             { background: #0f172a; border-right-color: var(--border); }
+        body.dark .expense-table td         { border-bottom-color: var(--border); }
+        body.dark .expense-table td input:focus { background: rgba(59,130,246,0.1); }
+        body.dark .dist-bar-wrap            { background: #334155; }
+        body.dark .travel-config            { background: #0f172a; }
+        body.dark .travel-stats             { background: #0f172a; }
+        body.dark .countdown-placeholder    { background: #0f172a; color: var(--text-muted); }
+        body.dark .btn-add-row:hover        { background: rgba(59,130,246,0.1); }
+        body.dark .cal-popup                { background: var(--card); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        body.dark .cal-nav                  { background: #334155; color: var(--text); }
+        body.dark .cal-nav:hover            { background: #475569; }
+        body.dark .cal-day:not(.selected):not(.empty) { color: var(--text); }
+        body.dark .cal-day:hover:not(.selected):not(.past):not(.empty) { background: #334155; }
+        body.dark .date-trigger             { background: var(--card); }
+        body.dark .date-input               { background: var(--card); }
+        body.dark .annual-card              { background: #0f172a; }
+        body.dark .inline-input             { background: transparent; }
+
+        .dark-toggle {
+            background: none;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+        .dark-toggle:hover { background: var(--border); }
+
+        /* ── Historial mensual ───────────────────────────────────────────────── */
+        .history-entry {
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .history-entry + .history-entry { margin-top: 10px; }
+
+        .history-entry-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .history-month {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            text-transform: capitalize;
+        }
+        .history-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .hg-cell {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .hg-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+        .hg-val { font-size: 14px; font-weight: 800; color: var(--text); }
+        .hg-val.green { color: var(--green); }
+        .hg-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+            background: transparent;
+            font-family: inherit;
+            padding: 0;
+        }
+        .hg-input::placeholder { color: var(--text-muted); font-weight: 600; font-size: 13px; }
+
+        /* ── Ahorro acumulado ────────────────────────────────────────────────── */
+        .accum-summary {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .accum-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .accum-val { font-size: 15px; font-weight: 800; color: var(--text); }
+        .accum-val.green { color: var(--green); }
+        .accum-bar-wrap {
+            background: var(--border);
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0 8px;
+        }
+        .accum-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--green));
+            border-radius: 20px;
+            transition: width 0.4s ease;
+            min-width: 4px;
+        }
+        .accum-note {
+            font-size: 12px;
+            font-weight: 700;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -816,12 +955,15 @@
             <div style="font-size:17px; font-weight:800; color:var(--text)">Familia Borrás Coll</div>
         </div>
     </div>
-    <div class="header-right">
-        <div class="sync-status">
-            <div class="sync-dot" id="sync-dot"></div>
-            <span id="sync-label">Conectando...</span>
+    <div style="display:flex; align-items:center; gap:12px">
+        <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()">🌙</button>
+        <div class="header-right">
+            <div class="sync-status">
+                <div class="sync-dot" id="sync-dot"></div>
+                <span id="sync-label">Conectando...</span>
+            </div>
+            <div class="header-date" id="current-date"></div>
         </div>
-        <div class="header-date" id="current-date"></div>
     </div>
 </header>
 
@@ -1002,6 +1144,19 @@
         </div>
     </div>
 
+    <div class="card">
+        <div id="savings-accum"></div>
+        <div class="section-header">
+            <div class="card-title" style="margin-bottom:0">Historial mensual</div>
+            <button class="btn-primary" onclick="saveMonth()">+ Guardar mes</button>
+        </div>
+        <div id="history-container" style="margin-top:14px">
+            <p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">
+                No hay meses guardados. Pulsa "+ Guardar mes" para empezar el historial.
+            </p>
+        </div>
+    </div>
+
 </main>
 
 <div class="toast" id="toast"></div>
@@ -1049,7 +1204,9 @@
         ],
         travelGoals: [],
         travelPct: 50,
-        nextId: 20
+        nextId: 20,
+        history: [],
+        darkMode: false
     };
 
     let _ignoreNext = false;
@@ -1084,6 +1241,7 @@
             S = data;
             syncInputs();
             render();
+            applyDark();
             toast('Datos actualizados');
         }
     }, (error) => {
@@ -1202,6 +1360,7 @@
         setText('ann-expenses', eur(exp * 12));
         setText('ann-savings',  eur(sav * 12));
         setText('savings-5y',   eur(sav * 60));
+        renderHistory();
     }
 
     function setSeg(id, width, label) {
@@ -1500,6 +1659,121 @@
         schedSave();
     };
 
+    // ─── Modo oscuro ──────────────────────────────────────────────────────────
+    function applyDark() {
+        document.body.classList.toggle('dark', !!S.darkMode);
+        const btn = el('dark-toggle');
+        if (btn) btn.textContent = S.darkMode ? '☀️' : '🌙';
+    }
+
+    window.toggleDark = function() {
+        S.darkMode = !S.darkMode;
+        applyDark();
+        schedSave();
+    };
+
+    // ─── Historial mensual ────────────────────────────────────────────────────
+    function renderHistory() {
+        const container = el('history-container');
+        const accumEl   = el('savings-accum');
+        if (!container || !accumEl) return;
+        const history = S.history || [];
+
+        if (history.length === 0) {
+            accumEl.innerHTML = '';
+            container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">No hay meses guardados. Pulsa "+ Guardar mes" para empezar el historial.</p>`;
+            return;
+        }
+
+        const totalTarget = history.reduce((a, h) => a + (h.savingsTarget || 0), 0);
+        const totalActual = history.reduce((a, h) => a + (h.actualSavings != null ? h.actualSavings : 0), 0);
+        const barPct = totalTarget > 0 ? Math.min(100, Math.round(totalActual / totalTarget * 100)) : 0;
+        const diff   = totalActual - totalTarget;
+
+        accumEl.innerHTML = `
+            <div class="accum-summary">
+                <div class="accum-row">
+                    <span>Ahorro real acumulado</span>
+                    <span class="accum-val green">${eur(totalActual)}</span>
+                </div>
+                <div class="accum-row">
+                    <span>Objetivo acumulado</span>
+                    <span class="accum-val">${eur(totalTarget)}</span>
+                </div>
+                <div class="accum-bar-wrap">
+                    <div class="accum-bar-fill" style="width:${barPct}%"></div>
+                </div>
+                <div class="accum-note" style="color:${diff >= 0 ? 'var(--green)' : 'var(--red)'}">
+                    ${diff >= 0 ? '+' : ''}${eur(diff)} ${diff >= 0 ? 'por encima del objetivo' : 'por debajo del objetivo'}
+                </div>
+            </div>`;
+
+        container.innerHTML = history.map(h => `
+            <div class="history-entry">
+                <div class="history-entry-header">
+                    <span class="history-month">${h.label}</span>
+                    <button class="btn-delete" onclick="delHistoryEntry(${h.id})">✕</button>
+                </div>
+                <div class="history-grid">
+                    <div class="hg-cell">
+                        <div class="hg-label">Ingresos</div>
+                        <div class="hg-val">${eur(h.income)}</div>
+                    </div>
+                    <div class="hg-cell">
+                        <div class="hg-label">Gastos</div>
+                        <div class="hg-val">${eur(h.expenses)}</div>
+                    </div>
+                    <div class="hg-cell">
+                        <div class="hg-label">Objetivo ahorro</div>
+                        <div class="hg-val green">${eur(h.savingsTarget)}</div>
+                    </div>
+                    <div class="hg-cell">
+                        <div class="hg-label">Ahorro real</div>
+                        <input class="hg-input" type="number" min="0" step="10"
+                            value="${h.actualSavings != null ? h.actualSavings : ''}"
+                            placeholder="—"
+                            onchange="updActualSavings(${h.id}, this.value)">
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    window.saveMonth = function() {
+        if (!S.history) S.history = [];
+        const now      = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        if (S.history.find(h => h.month === monthKey)) {
+            toast('Este mes ya está guardado');
+            return;
+        }
+        S.history.unshift({
+            id:            S.nextId++,
+            month:         monthKey,
+            label:         now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }),
+            income:        totalIncome(),
+            expenses:      totalExpenses(),
+            savingsTarget: savingsAmt(),
+            actualSavings: null,
+            free:          freeAmt()
+        });
+        renderHistory();
+        schedSave();
+        toast('Mes guardado ✓');
+    };
+
+    window.updActualSavings = function(id, value) {
+        const entry = (S.history || []).find(h => h.id === id);
+        if (entry) entry.actualSavings = value === '' ? null : +value || 0;
+        renderHistory();
+        schedSave();
+    };
+
+    window.delHistoryEntry = function(id) {
+        S.history = (S.history || []).filter(h => h.id !== id);
+        renderHistory();
+        schedSave();
+    };
+
     // ─── Toast ────────────────────────────────────────────────────────────────
     function toast(msg) {
         const t = el('toast');
@@ -1554,6 +1828,7 @@
     // Initial render with empty state while Firebase loads
     syncInputs();
     render();
+    applyDark();
 </script>
 </body>
 </html>
