@@ -76,3 +76,6 @@ Sección para planificar viajes con:
 | 2026-03-23 | Icono de pantalla de inicio iOS: bolsa de dinero con símbolo €, luego rediseñado como casa + bolsa |
 | 2026-03-23 | Calendario móvil: anclado a right:0 para que no se salga de pantalla + max-width seguro |
 | 2026-03-23 | Eliminado texto "Seleccionar fecha" del botón de fecha para alinear con campo presupuesto |
+| 2026-03-23 | Modo oscuro: toggle 🌙/☀️ en header, persiste en Firebase, cubre todos los componentes |
+| 2026-03-23 | Historial mensual: "Guardar mes" toma snapshot del mes actual, tarjetas editables por mes |
+| 2026-03-23 | Ahorro acumulado: barra de progreso real vs objetivo, campo editable de ahorro real por mes |
