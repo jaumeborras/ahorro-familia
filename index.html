@@ -65,21 +65,40 @@
             font-size: 18px;
         }
 
-        header h1 {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        header .header-sub {
-            font-size: 12px;
-            color: var(--text-muted);
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .header-date {
             font-size: 13px;
             color: var(--text-muted);
             text-align: right;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+            transition: background 0.3s;
+        }
+
+        .sync-dot.connected { background: var(--green); }
+        .sync-dot.saving { background: var(--orange); animation: pulse 0.8s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
 
         main {
@@ -91,7 +110,6 @@
             gap: 20px;
         }
 
-        /* Cards */
         .card {
             background: var(--card);
             border-radius: var(--radius);
@@ -117,7 +135,6 @@
 
         .section-header .card-title { margin-bottom: 0; }
 
-        /* Metrics */
         .metrics {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -145,10 +162,10 @@
             border-radius: 3px 3px 0 0;
         }
 
-        .metric-card.income::before { background: var(--primary); }
+        .metric-card.income::before   { background: var(--primary); }
         .metric-card.expenses::before { background: var(--purple); }
-        .metric-card.savings::before { background: var(--green); }
-        .metric-card.free::before { background: var(--orange); }
+        .metric-card.savings::before  { background: var(--green); }
+        .metric-card.free::before     { background: var(--orange); }
 
         .metric-label {
             font-size: 11px;
@@ -168,7 +185,7 @@
 
         .metric-value.positive { color: var(--green); }
         .metric-value.negative { color: var(--red); }
-        .metric-value.warning { color: var(--orange); }
+        .metric-value.warning  { color: var(--orange); }
 
         .metric-sub {
             font-size: 11px;
@@ -176,7 +193,6 @@
             margin-top: 5px;
         }
 
-        /* Deficit alert */
         .alert {
             background: var(--red-light);
             border: 1.5px solid #fca5a5;
@@ -192,18 +208,14 @@
 
         .alert.show { display: flex; }
 
-        /* Two-col layout */
         .two-col {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
 
-        @media (max-width: 599px) {
-            .two-col { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
 
-        /* Income inputs */
         .income-person {
             display: flex;
             flex-direction: column;
@@ -232,10 +244,7 @@
         .avatar-j { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
         .avatar-m { background: linear-gradient(135deg, #a855f7, #7c3aed); }
 
-        .person-label span {
-            font-weight: 700;
-            font-size: 14px;
-        }
+        .person-label span { font-weight: 700; font-size: 14px; }
 
         .input-group {
             display: flex;
@@ -273,7 +282,6 @@
             background: transparent;
         }
 
-        /* Savings goal */
         .toggle-row {
             display: flex;
             gap: 6px;
@@ -306,12 +314,8 @@
             margin-top: 10px;
         }
 
-        .savings-result strong {
-            color: var(--green);
-            font-size: 15px;
-        }
+        .savings-result strong { color: var(--green); font-size: 15px; }
 
-        /* Expense tables */
         .tabs {
             display: flex;
             gap: 2px;
@@ -348,10 +352,7 @@
             font-weight: 700;
         }
 
-        .tab-btn.active .tab-total {
-            background: #dbeafe;
-            color: var(--primary);
-        }
+        .tab-btn.active .tab-total { background: #dbeafe; color: var(--primary); }
 
         table.expense-table {
             width: 100%;
@@ -369,7 +370,7 @@
             border-bottom: 1.5px solid var(--border);
         }
 
-        .expense-table th.right { text-align: right; }
+        .expense-table th.right  { text-align: right; }
         .expense-table th.center { text-align: center; width: 44px; }
 
         .expense-table td {
@@ -394,18 +395,10 @@
             transition: background 0.15s;
         }
 
-        .expense-table td input:focus {
-            background: #f0f7ff;
-        }
+        .expense-table td input:focus { background: #f0f7ff; }
 
-        .expense-table td.amount-col {
-            width: 130px;
-        }
-
-        .expense-table td.amount-col input {
-            text-align: right;
-            font-weight: 700;
-        }
+        .expense-table td.amount-col { width: 130px; }
+        .expense-table td.amount-col input { text-align: right; font-weight: 700; }
 
         .expense-table tfoot td {
             padding: 10px 10px;
@@ -415,9 +408,7 @@
             color: var(--text);
         }
 
-        .expense-table tfoot td.amount-col {
-            color: var(--primary);
-        }
+        .expense-table tfoot td.amount-col { color: var(--primary); }
 
         .btn-delete {
             background: none;
@@ -433,10 +424,7 @@
             margin: auto;
         }
 
-        .btn-delete:hover {
-            color: var(--red);
-            background: var(--red-light);
-        }
+        .btn-delete:hover { color: var(--red); background: var(--red-light); }
 
         .btn-add-row {
             display: flex;
@@ -457,13 +445,8 @@
             font-family: inherit;
         }
 
-        .btn-add-row:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: #f0f7ff;
-        }
+        .btn-add-row:hover { border-color: var(--primary); color: var(--primary); background: #f0f7ff; }
 
-        /* Distribution bar */
         .dist-bar-wrap {
             background: #f1f5f9;
             border-radius: 10px;
@@ -501,16 +484,9 @@
             color: var(--text-muted);
         }
 
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
         .legend-item strong { color: var(--text); }
 
-        /* Travel planner */
         .travel-config {
             display: flex;
             align-items: center;
@@ -542,11 +518,7 @@
 
         .inline-input:focus { border-color: var(--primary); }
 
-        .travel-goals-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .travel-goals-list { display: flex; flex-direction: column; gap: 12px; }
 
         .travel-card {
             border: 1.5px solid var(--border);
@@ -587,23 +559,9 @@
             margin-bottom: 10px;
         }
 
-        .travel-stat {
-            text-align: center;
-        }
-
-        .travel-stat .ts-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary);
-            line-height: 1;
-        }
-
-        .travel-stat .ts-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 3px;
-        }
-
+        .travel-stat { text-align: center; }
+        .travel-stat .ts-value { font-size: 20px; font-weight: 800; color: var(--primary); line-height: 1; }
+        .travel-stat .ts-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
         .travel-stat.green .ts-value { color: var(--green); }
         .travel-stat.orange .ts-value { color: var(--orange); }
 
@@ -615,16 +573,9 @@
             color: var(--text-muted);
         }
 
-        .travel-budget-row .input-group {
-            max-width: 160px;
-        }
+        .travel-budget-row .input-group { max-width: 160px; }
 
-        /* Annual */
-        .annual-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
+        .annual-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
         .annual-card {
             background: #f8fafc;
@@ -635,11 +586,9 @@
 
         .annual-card .av { font-size: 22px; font-weight: 800; color: var(--text); }
         .annual-card .al { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-        .annual-card.a-income .av { color: var(--primary); }
+        .annual-card.a-income .av  { color: var(--primary); }
         .annual-card.a-savings .av { color: var(--green); }
-        .annual-card.a-travel .av { color: var(--purple); }
 
-        /* Btn primary */
         .btn-primary {
             background: var(--primary);
             color: white;
@@ -658,7 +607,6 @@
 
         .btn-primary:hover { background: var(--primary-dark); }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -677,13 +625,6 @@
         }
 
         .toast.show { opacity: 1; transform: translateY(0); }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .metrics { grid-template-columns: repeat(2, 1fr); }
-            .travel-stats { grid-template-columns: repeat(3, 1fr); }
-            .annual-row { grid-template-columns: repeat(3, 1fr); }
-        }
     </style>
 </head>
 <body>
@@ -693,20 +634,24 @@
         <div class="header-icon">💰</div>
         <div>
             <div style="font-size:17px; font-weight:800; color:var(--text)">Sistema de Ahorro</div>
-            <div class="header-sub">Jaime & Marina · 2026</div>
+            <div style="font-size:12px; color:var(--text-muted)">Jaime & Marina · 2026</div>
         </div>
     </div>
-    <div class="header-date" id="current-date"></div>
+    <div class="header-right">
+        <div class="sync-status">
+            <div class="sync-dot" id="sync-dot"></div>
+            <span id="sync-label">Conectando...</span>
+        </div>
+        <div class="header-date" id="current-date"></div>
+    </div>
 </header>
 
 <main>
 
-    <!-- Alert deficit -->
     <div class="alert" id="alert-deficit">
-        ⚠️ <span id="alert-text">Los gastos superan los ingresos. Revisa tu presupuesto.</span>
+        ⚠️ <span id="alert-text"></span>
     </div>
 
-    <!-- Metrics -->
     <div class="metrics">
         <div class="metric-card income">
             <div class="metric-label">Ingresos</div>
@@ -730,7 +675,6 @@
         </div>
     </div>
 
-    <!-- Income + Savings goal -->
     <div class="two-col">
         <div class="card">
             <div class="card-title">Ingresos mensuales netos</div>
@@ -779,7 +723,6 @@
         </div>
     </div>
 
-    <!-- Expenses -->
     <div class="card">
         <div class="card-title">Gastos mensuales</div>
         <div class="tabs">
@@ -834,10 +777,9 @@
         </div>
     </div>
 
-    <!-- Distribution -->
     <div class="card">
         <div class="card-title">Distribución de los ingresos</div>
-        <div class="dist-bar-wrap" id="dist-bar">
+        <div class="dist-bar-wrap">
             <div class="dist-seg" id="seg-fixed"    style="background:#3b82f6"></div>
             <div class="dist-seg" id="seg-variable" style="background:#8b5cf6"></div>
             <div class="dist-seg" id="seg-savings"  style="background:#16a34a"></div>
@@ -852,21 +794,17 @@
         </div>
     </div>
 
-    <!-- Travel planner -->
     <div class="card">
         <div class="section-header">
             <div class="card-title">Planificador de viajes</div>
             <button class="btn-primary" onclick="addTravelGoal()">+ Añadir viaje</button>
         </div>
-
         <div class="travel-config">
             <span>Destinas el</span>
             <input type="number" class="inline-input" id="travel-pct" min="0" max="100" placeholder="50">
             <span>% del dinero libre a viajes =</span>
             <strong id="travel-monthly">— €/mes</strong>
-            <span style="margin-left:4px; font-size:11px; color:#94a3b8">(ajusta el % según tu prioridad viajera)</span>
         </div>
-
         <div class="travel-goals-list" id="travel-goals-container">
             <p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">
                 No hay viajes planificados. Pulsa "Añadir viaje" para empezar.
@@ -874,7 +812,6 @@
         </div>
     </div>
 
-    <!-- Annual projection -->
     <div class="card">
         <div class="card-title">Proyección anual</div>
         <div class="annual-row">
@@ -900,60 +837,119 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
-    // ─── Default state ────────────────────────────────────────────────────────
-    const DEFAULT_STATE = {
+<script type="module">
+    import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue }         from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js';
+
+    // ─── Firebase ─────────────────────────────────────────────────────────────
+    const app = initializeApp({
+        apiKey:            "AIzaSyAa2nvA9TfJUGIRHCK7m2S4x8Z18fZAGv8",
+        authDomain:        "ahorro-familia-c92e1.firebaseapp.com",
+        databaseURL:       "https://ahorro-familia-c92e1-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId:         "ahorro-familia-c92e1",
+        storageBucket:     "ahorro-familia-c92e1.firebasestorage.app",
+        messagingSenderId: "234527809085",
+        appId:             "1:234527809085:web:21d1e227a8002572191454"
+    });
+
+    const db       = getDatabase(app);
+    const estadoRef = ref(db, 'estado');
+
+    // ─── State ────────────────────────────────────────────────────────────────
+    let S = {
         income: { jaime: 0, marina: 0 },
         savings: { type: 'percentage', value: 20 },
         fixedExpenses: [
-            { id: 1, name: 'Alquiler / Hipoteca', amount: 0 },
-            { id: 2, name: 'Comunidad de vecinos', amount: 0 },
-            { id: 3, name: 'Electricidad', amount: 0 },
-            { id: 4, name: 'Agua', amount: 0 },
-            { id: 5, name: 'Gas / Calefacción', amount: 0 },
-            { id: 6, name: 'Internet + Móviles', amount: 0 },
-            { id: 7, name: 'Seguros (hogar, coche...)', amount: 0 },
-            { id: 8, name: 'Suscripciones (Netflix, gym...)', amount: 0 },
+            { id: 1,  name: 'Alquiler / Hipoteca',           amount: 0 },
+            { id: 2,  name: 'Comunidad de vecinos',           amount: 0 },
+            { id: 3,  name: 'Electricidad',                   amount: 0 },
+            { id: 4,  name: 'Agua',                           amount: 0 },
+            { id: 5,  name: 'Gas / Calefacción',              amount: 0 },
+            { id: 6,  name: 'Internet + Móviles',             amount: 0 },
+            { id: 7,  name: 'Seguros (hogar, coche...)',      amount: 0 },
+            { id: 8,  name: 'Suscripciones (Netflix, gym...)',amount: 0 },
         ],
         variableExpenses: [
-            { id: 9,  name: 'Supermercado', amount: 0 },
-            { id: 10, name: 'Restaurantes y cafés', amount: 0 },
-            { id: 11, name: 'Transporte (gasolina, transporte público)', amount: 0 },
-            { id: 12, name: 'Ropa y complementos', amount: 0 },
-            { id: 13, name: 'Salud y farmacia', amount: 0 },
-            { id: 14, name: 'Ocio y cultura', amount: 0 },
-            { id: 15, name: 'Otros gastos', amount: 0 },
+            { id: 9,  name: 'Supermercado',                            amount: 0 },
+            { id: 10, name: 'Restaurantes y cafés',                    amount: 0 },
+            { id: 11, name: 'Transporte (gasolina, transporte público)',amount: 0 },
+            { id: 12, name: 'Ropa y complementos',                     amount: 0 },
+            { id: 13, name: 'Salud y farmacia',                        amount: 0 },
+            { id: 14, name: 'Ocio y cultura',                          amount: 0 },
+            { id: 15, name: 'Otros gastos',                            amount: 0 },
         ],
         travelGoals: [],
         travelPct: 50,
         nextId: 20
     };
 
-    // ─── State ────────────────────────────────────────────────────────────────
-    let S = JSON.parse(JSON.stringify(DEFAULT_STATE));
-
-    // ─── Persistence ──────────────────────────────────────────────────────────
-    function loadState() {
-        try {
-            const raw = localStorage.getItem('ahorro-j-m-v2');
-            if (raw) S = JSON.parse(raw);
-        } catch(e) {}
-    }
-
+    let _ignoreNext = false;
     let _saveTimer;
+
+    // ─── Firebase: save ───────────────────────────────────────────────────────
     function schedSave() {
         clearTimeout(_saveTimer);
+        setSyncState('saving');
         _saveTimer = setTimeout(() => {
-            localStorage.setItem('ahorro-j-m-v2', JSON.stringify(S));
-            toast('Guardado');
-        }, 600);
+            _ignoreNext = true;
+            set(estadoRef, S)
+                .then(() => {
+                    setSyncState('connected');
+                    toast('Guardado en la nube');
+                    setTimeout(() => { _ignoreNext = false; }, 800);
+                })
+                .catch(() => {
+                    _ignoreNext = false;
+                    setSyncState('error');
+                    toast('Error al guardar');
+                });
+        }, 700);
+    }
+
+    // ─── Firebase: listen ─────────────────────────────────────────────────────
+    onValue(estadoRef, (snapshot) => {
+        setSyncState('connected');
+        if (_ignoreNext) return;
+        const data = snapshot.val();
+        if (data) {
+            S = data;
+            syncInputs();
+            render();
+            toast('Datos actualizados');
+        }
+    }, (error) => {
+        setSyncState('error');
+    });
+
+    // ─── Sync state → DOM inputs ──────────────────────────────────────────────
+    function syncInputs() {
+        // Only sync inputs that are NOT currently focused (don't interrupt typing)
+        const active = document.activeElement;
+        if (active !== el('income-jaime'))  el('income-jaime').value  = S.income.jaime  || '';
+        if (active !== el('income-marina')) el('income-marina').value = S.income.marina || '';
+        if (active !== el('savings-value')) el('savings-value').value = S.savings.value || '';
+        if (active !== el('travel-pct'))    el('travel-pct').value    = S.travelPct     || 50;
+
+        el('btn-pct').classList.toggle('active',   S.savings.type === 'percentage');
+        el('btn-fixed').classList.toggle('active', S.savings.type === 'amount');
+        el('savings-prefix').textContent = S.savings.type === 'percentage' ? '%' : '€';
+    }
+
+    // ─── Sync status indicator ────────────────────────────────────────────────
+    function setSyncState(state) {
+        const dot   = el('sync-dot');
+        const label = el('sync-label');
+        dot.className = 'sync-dot';
+        if (state === 'connected') { dot.classList.add('connected'); label.textContent = 'Sincronizado'; }
+        if (state === 'saving')    { dot.classList.add('saving');    label.textContent = 'Guardando...'; }
+        if (state === 'error')     {                                  label.textContent = 'Sin conexión'; }
     }
 
     // ─── Calculations ─────────────────────────────────────────────────────────
-    function totalIncome()    { return (S.income.jaime || 0) + (S.income.marina || 0); }
-    function totalFixed()     { return S.fixedExpenses.reduce((a, e) => a + (e.amount || 0), 0); }
-    function totalVariable()  { return S.variableExpenses.reduce((a, e) => a + (e.amount || 0), 0); }
-    function totalExpenses()  { return totalFixed() + totalVariable(); }
+    function totalIncome()   { return (S.income.jaime || 0) + (S.income.marina || 0); }
+    function totalFixed()    { return S.fixedExpenses.reduce((a, e)   => a + (e.amount || 0), 0); }
+    function totalVariable() { return S.variableExpenses.reduce((a, e) => a + (e.amount || 0), 0); }
+    function totalExpenses() { return totalFixed() + totalVariable(); }
 
     function savingsAmt() {
         const inc = totalIncome();
@@ -962,7 +958,7 @@
             : (S.savings.value || 0);
     }
 
-    function freeAmt() { return totalIncome() - totalExpenses() - savingsAmt(); }
+    function freeAmt()       { return totalIncome() - totalExpenses() - savingsAmt(); }
     function travelMonthly() { return Math.max(0, freeAmt()) * ((S.travelPct || 0) / 100); }
 
     // ─── Formatting ───────────────────────────────────────────────────────────
@@ -977,24 +973,21 @@
 
     function esc(s) {
         return String(s)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // ─── Render ───────────────────────────────────────────────────────────────
     function render() {
-        const inc = totalIncome();
-        const exp = totalExpenses();
-        const sav = savingsAmt();
+        const inc  = totalIncome();
+        const exp  = totalExpenses();
+        const sav  = savingsAmt();
         const free = freeAmt();
         const savPct = inc > 0 ? (sav / inc * 100) : 0;
 
-        // Metrics
-        set('m-income', eur(inc));
+        set('m-income',   eur(inc));
         set('m-expenses', eur(exp));
-        set('m-savings', eur(sav));
+        set('m-savings',  eur(sav));
         set('m-savings-sub', pct(savPct) + ' de los ingresos');
 
         const freeEl = el('m-free');
@@ -1002,7 +995,6 @@
         freeEl.className = 'metric-value ' + (free < 0 ? 'negative' : free < 100 ? 'warning' : 'positive');
         set('m-free-sub', free < 0 ? 'DEFICIT — revisa los gastos' : 'después del ahorro');
 
-        // Alert
         const alertEl = el('alert-deficit');
         if (inc > 0 && free < 0) {
             alertEl.classList.add('show');
@@ -1011,26 +1003,20 @@
             alertEl.classList.remove('show');
         }
 
-        // Savings display
         set('savings-display', eur(sav));
-
-        // Tables
         renderTable('fixed');
         renderTable('variable');
-
-        // Tab totals
-        set('tab-fixed-total', eur(totalFixed()));
+        set('tab-fixed-total',    eur(totalFixed()));
         set('tab-variable-total', eur(totalVariable()));
-        set('fixed-total', eur(totalFixed()));
-        set('variable-total', eur(totalVariable()));
+        set('fixed-total',        eur(totalFixed()));
+        set('variable-total',     eur(totalVariable()));
 
-        // Distribution bar
         if (inc > 0) {
-            const pF = Math.max(0, totalFixed() / inc * 100);
-            const pV = Math.max(0, totalVariable() / inc * 100);
-            const pS = Math.max(0, sav / inc * 100);
-            const pFree = Math.max(0, free / inc * 100);
-            const pDef = free < 0 ? Math.min(100 - pF - pV - pS, Math.abs(free) / inc * 100) : 0;
+            const pF    = Math.max(0, totalFixed()    / inc * 100);
+            const pV    = Math.max(0, totalVariable() / inc * 100);
+            const pS    = Math.max(0, sav             / inc * 100);
+            const pFree = Math.max(0, free            / inc * 100);
+            const pDef  = free < 0 ? Math.min(100 - pF - pV - pS, Math.abs(free) / inc * 100) : 0;
 
             setSeg('seg-fixed',    pF,    pF > 8 ? 'Fijos' : '');
             setSeg('seg-variable', pV,    pV > 8 ? 'Variables' : '');
@@ -1044,12 +1030,10 @@
             set('leg-free',     pct(Math.max(0, pFree)));
         }
 
-        // Travel
         const tm = travelMonthly();
         set('travel-monthly', eur(tm) + '/mes');
         renderTravel(tm);
 
-        // Annual
         set('ann-income',   eur(inc * 12));
         set('ann-expenses', eur(exp * 12));
         set('ann-savings',  eur(sav * 12));
@@ -1063,50 +1047,54 @@
     }
 
     function renderTable(type) {
-        const arr = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
+        const arr   = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
         const tbody = el(type + '-tbody');
+        const active = document.activeElement;
+        const activeId = active ? active.dataset.id : null;
+        const activeField = active ? active.dataset.field : null;
+
         tbody.innerHTML = '';
         arr.forEach(exp => {
             const tr = document.createElement('tr');
             tr.innerHTML =
                 `<td><input type="text" value="${esc(exp.name)}" placeholder="Nombre del gasto"
-                    onchange="updExp('${type}',${exp.id},'name',this.value)"></td>
+                    data-id="${exp.id}" data-field="name" data-type="${type}"
+                    onchange="updExpName(this)"></td>
                  <td class="amount-col">
                     <input type="number" value="${exp.amount || ''}" min="0" step="10" placeholder="0"
-                        onchange="updExp('${type}',${exp.id},'amount',+this.value)"
-                        oninput="updExp('${type}',${exp.id},'amount',+this.value)">
+                        data-id="${exp.id}" data-field="amount" data-type="${type}"
+                        oninput="updExpAmt(this)">
                  </td>
-                 <td><button class="btn-delete" onclick="delExp('${type}',${exp.id})" title="Eliminar">✕</button></td>`;
+                 <td><button class="btn-delete" onclick="delExp('${type}',${exp.id})">✕</button></td>`;
             tbody.appendChild(tr);
         });
     }
 
     function renderTravel(monthly) {
         const container = el('travel-goals-container');
-        if (S.travelGoals.length === 0) {
+        if (!S.travelGoals || S.travelGoals.length === 0) {
             container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">No hay viajes planificados. Pulsa "Añadir viaje" para empezar.</p>';
             return;
         }
         container.innerHTML = '';
         S.travelGoals.forEach(g => {
-            const months = monthly > 0 ? Math.ceil(g.amount / monthly) : null;
+            const months  = monthly > 0 ? Math.ceil(g.amount / monthly) : null;
             const dateStr = months !== null ? targetDate(months) : '—';
-            const div = document.createElement('div');
+            const div     = document.createElement('div');
             div.className = 'travel-card';
             div.innerHTML =
                 `<div class="travel-card-header">
                     <span style="font-size:22px">✈️</span>
                     <input type="text" value="${esc(g.name)}" placeholder="Nombre del viaje"
-                        onchange="updTravel(${g.id},'name',this.value)">
-                    <button class="btn-delete" onclick="delTravel(${g.id})" title="Eliminar">✕</button>
+                        onchange="updTravelName(${g.id}, this.value)">
+                    <button class="btn-delete" onclick="delTravel(${g.id})">✕</button>
                 </div>
                 <div class="travel-budget-row" style="margin-bottom:12px">
                     <span>Presupuesto del viaje:</span>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
                         <input type="number" value="${g.amount}" min="0" step="100"
-                            onchange="updTravel(${g.id},'amount',+this.value)"
-                            oninput="updTravel(${g.id},'amount',+this.value)">
+                            oninput="updTravelAmt(${g.id}, +this.value)">
                     </div>
                 </div>
                 <div class="travel-stats">
@@ -1115,11 +1103,11 @@
                         <div class="ts-label">meses ahorrando</div>
                     </div>
                     <div class="travel-stat green">
-                        <div class="ts-value">${dateStr}</div>
+                        <div class="ts-value" style="font-size:14px">${dateStr}</div>
                         <div class="ts-label">fecha estimada</div>
                     </div>
                     <div class="travel-stat orange">
-                        <div class="ts-value">${monthly > 0 ? eur(monthly) : '—'}</div>
+                        <div class="ts-value" style="font-size:16px">${monthly > 0 ? eur(monthly) : '—'}</div>
                         <div class="ts-label">ahorro/mes viajes</div>
                     </div>
                 </div>`;
@@ -1128,115 +1116,112 @@
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
-    function el(id) { return document.getElementById(id); }
+    function el(id)       { return document.getElementById(id); }
     function set(id, txt) { el(id).textContent = txt; }
 
-    // ─── Actions ──────────────────────────────────────────────────────────────
-    function setSavingsType(type) {
+    // ─── Actions (exposed to window for inline handlers) ──────────────────────
+    window.setSavingsType = function(type) {
         S.savings.type = type;
-        el('btn-pct').classList.toggle('active', type === 'percentage');
+        el('btn-pct').classList.toggle('active',   type === 'percentage');
         el('btn-fixed').classList.toggle('active', type === 'amount');
         el('savings-prefix').textContent = type === 'percentage' ? '%' : '€';
         const inp = el('savings-value');
-        inp.max = type === 'percentage' ? 100 : 99999;
-        inp.step = type === 'percentage' ? 1 : 50;
+        inp.max  = type === 'percentage' ? 100 : 99999;
+        inp.step = type === 'percentage' ? 1   : 50;
         render(); schedSave();
-    }
+    };
 
-    function setTab(tab) {
-        el('tab-fixed').classList.toggle('active', tab === 'fixed');
+    window.setTab = function(tab) {
+        el('tab-fixed').classList.toggle('active',    tab === 'fixed');
         el('tab-variable').classList.toggle('active', tab === 'variable');
-        el('panel-fixed').style.display = tab === 'fixed' ? '' : 'none';
+        el('panel-fixed').style.display    = tab === 'fixed'    ? '' : 'none';
         el('panel-variable').style.display = tab === 'variable' ? '' : 'none';
-    }
+    };
 
-    function addExpense(type) {
+    window.addExpense = function(type) {
         const exp = { id: S.nextId++, name: '', amount: 0 };
         (type === 'fixed' ? S.fixedExpenses : S.variableExpenses).push(exp);
         render(); schedSave();
         setTimeout(() => {
             const tbody = el(type + '-tbody');
-            const last = tbody.lastElementChild;
+            const last  = tbody.lastElementChild;
             if (last) last.querySelector('input[type=text]').focus();
         }, 30);
-    }
+    };
 
-    function delExp(type, id) {
-        if (type === 'fixed')
-            S.fixedExpenses = S.fixedExpenses.filter(e => e.id !== id);
-        else
-            S.variableExpenses = S.variableExpenses.filter(e => e.id !== id);
+    window.delExp = function(type, id) {
+        if (type === 'fixed') S.fixedExpenses    = S.fixedExpenses.filter(e    => e.id !== id);
+        else                  S.variableExpenses = S.variableExpenses.filter(e => e.id !== id);
         render(); schedSave();
-    }
+    };
 
-    function updExp(type, id, field, value) {
-        const arr = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
-        const exp = arr.find(e => e.id === id);
-        if (exp) exp[field] = value;
-        // Only full render on amount change for totals
-        if (field === 'amount') render();
-        else {
-            set('tab-fixed-total', eur(totalFixed()));
-            set('tab-variable-total', eur(totalVariable()));
-        }
+    window.updExpName = function(input) {
+        const type = input.dataset.type, id = +input.dataset.id;
+        const arr  = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
+        const exp  = arr.find(e => e.id === id);
+        if (exp) exp.name = input.value;
         schedSave();
-    }
+    };
 
-    function addTravelGoal() {
+    window.updExpAmt = function(input) {
+        const type = input.dataset.type, id = +input.dataset.id;
+        const arr  = type === 'fixed' ? S.fixedExpenses : S.variableExpenses;
+        const exp  = arr.find(e => e.id === id);
+        if (exp) exp.amount = +input.value || 0;
+        render(); schedSave();
+    };
+
+    window.addTravelGoal = function() {
+        if (!S.travelGoals) S.travelGoals = [];
         S.travelGoals.push({ id: S.nextId++, name: 'Nuevo viaje', amount: 1500 });
         render(); schedSave();
-    }
+    };
 
-    function delTravel(id) {
+    window.delTravel = function(id) {
         S.travelGoals = S.travelGoals.filter(g => g.id !== id);
         render(); schedSave();
-    }
+    };
 
-    function updTravel(id, field, value) {
+    window.updTravelName = function(id, value) {
         const g = S.travelGoals.find(g => g.id === id);
-        if (g) g[field] = value;
+        if (g) g.name = value;
+        schedSave();
+    };
+
+    window.updTravelAmt = function(id, value) {
+        const g = S.travelGoals.find(g => g.id === id);
+        if (g) g.amount = value;
         renderTravel(travelMonthly());
         schedSave();
-    }
+    };
 
+    // ─── Toast ────────────────────────────────────────────────────────────────
     function toast(msg) {
         const t = el('toast');
-        t.textContent = msg + ' ✓';
+        t.textContent = msg;
         t.classList.add('show');
         clearTimeout(t._t);
-        t._t = setTimeout(() => t.classList.remove('show'), 1800);
+        t._t = setTimeout(() => t.classList.remove('show'), 2000);
     }
 
     // ─── Event wiring ─────────────────────────────────────────────────────────
     function wire(id, fn) {
-        el(id).addEventListener('input', fn);
+        el(id).addEventListener('input',  fn);
         el(id).addEventListener('change', fn);
     }
 
-    wire('income-jaime',  e => { S.income.jaime = +e.target.value || 0; render(); schedSave(); });
+    wire('income-jaime',  e => { S.income.jaime  = +e.target.value || 0; render(); schedSave(); });
     wire('income-marina', e => { S.income.marina = +e.target.value || 0; render(); schedSave(); });
     wire('savings-value', e => { S.savings.value = +e.target.value || 0; render(); schedSave(); });
-    wire('travel-pct',    e => { S.travelPct = +e.target.value || 0; render(); schedSave(); });
+    wire('travel-pct',    e => { S.travelPct     = +e.target.value || 0; render(); schedSave(); });
 
     // ─── Init ─────────────────────────────────────────────────────────────────
-    loadState();
-
-    // Sync inputs from state
-    el('income-jaime').value  = S.income.jaime  || '';
-    el('income-marina').value = S.income.marina || '';
-    el('savings-value').value = S.savings.value || '';
-    el('travel-pct').value    = S.travelPct || 50;
-
-    // Init savings type buttons/display
-    el('btn-pct').classList.toggle('active', S.savings.type === 'percentage');
-    el('btn-fixed').classList.toggle('active', S.savings.type === 'amount');
-    el('savings-prefix').textContent = S.savings.type === 'percentage' ? '%' : '€';
-
-    // Date
     el('current-date').textContent = new Date().toLocaleDateString('es-ES', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
 
+    // Initial render with empty state while Firebase loads
+    syncInputs();
     render();
 </script>
 </body>
