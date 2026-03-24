@@ -1014,6 +1014,68 @@
             padding: 2px 8px;
             margin-left: 8px;
         }
+
+        /* ── Registro de gastos reales ───────────────────────────────────────── */
+        .log-summary {
+            display: flex;
+            gap: 8px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 14px 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .log-summary-item {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+            padding: 8px 4px;
+        }
+        .log-summary-item .ls-val { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1; }
+        .log-summary-item .ls-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-top: 4px; }
+        .ls-val.green { color: var(--green); }
+        .ls-val.red   { color: var(--red); }
+        .log-empty { text-align: center; color: var(--text-muted); padding: 24px; font-size: 14px; }
+        .expense-table td input[type="date"] {
+            width: 100%; border: none; outline: none;
+            padding: 8px 6px; font-size: 13px;
+            color: var(--text); background: transparent;
+            font-family: inherit; border-radius: 7px;
+            transition: background 0.15s;
+        }
+        .expense-table td input[type="date"]:focus { background: #f0f7ff; }
+        body.dark .expense-table td input[type="date"]:focus { background: rgba(59,130,246,0.1); }
+
+        /* ── Proyección a largo plazo ────────────────────────────────────────── */
+        .proj-year-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 16px 0 14px;
+        }
+        .proj-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+        .proj-card .pc-years { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 6px; }
+        .proj-card .pc-val   { font-size: 22px; font-weight: 800; color: var(--green); line-height: 1.1; }
+        .proj-card .pc-extra { font-size: 11px; color: var(--primary); font-weight: 700; margin-top: 5px; min-height: 14px; }
+        .proj-simulator {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .proj-sim-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .06em; color: var(--text-muted); margin-bottom: 10px;
+        }
+        .proj-sim-row {
+            display: flex; align-items: center; gap: 10px;
+            flex-wrap: wrap; font-size: 13px; color: var(--text-muted);
+        }
+        .proj-sim-row .input-group { max-width: 150px; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -1194,23 +1256,57 @@
     </div>
 
     <div class="card">
-        <div class="card-title">Proyección anual</div>
+        <div class="section-header">
+            <div class="card-title">Gastos reales del mes</div>
+            <button class="btn-primary" onclick="addLogEntry()">+ Añadir</button>
+        </div>
+        <div id="log-summary"></div>
+        <div id="log-container"><div class="log-empty">Sin gastos registrados. Pulsa "+ Añadir" para empezar.</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Proyección</div>
         <div class="annual-row">
             <div class="annual-card a-income">
                 <div class="av" id="ann-income">—</div>
-                <div class="al">Ingresos totales</div>
+                <div class="al">Ingresos anuales</div>
             </div>
             <div class="annual-card">
                 <div class="av" id="ann-expenses">—</div>
-                <div class="al">Gastos totales</div>
+                <div class="al">Gastos anuales</div>
             </div>
             <div class="annual-card a-savings">
                 <div class="av" id="ann-savings">—</div>
-                <div class="al">Ahorro acumulado</div>
+                <div class="al">Ahorro este año</div>
             </div>
         </div>
-        <div style="margin-top:14px; font-size:13px; color:var(--text-muted); text-align:center">
-            A este ritmo, en 5 años habréis ahorrado <strong id="savings-5y" style="color:var(--green)">—</strong>
+        <div class="proj-year-cards">
+            <div class="proj-card">
+                <div class="pc-years">1 año</div>
+                <div class="pc-val" id="proj-1y">—</div>
+                <div class="pc-extra" id="proj-1y-extra"></div>
+            </div>
+            <div class="proj-card">
+                <div class="pc-years">3 años</div>
+                <div class="pc-val" id="proj-3y">—</div>
+                <div class="pc-extra" id="proj-3y-extra"></div>
+            </div>
+            <div class="proj-card">
+                <div class="pc-years">5 años</div>
+                <div class="pc-val" id="proj-5y">—</div>
+                <div class="pc-extra" id="proj-5y-extra"></div>
+            </div>
+        </div>
+        <div class="proj-simulator">
+            <div class="proj-sim-title">¿Qué pasa si ahorráis más?</div>
+            <div class="proj-sim-row">
+                <span>Si ahorro</span>
+                <div class="input-group">
+                    <span class="input-prefix">+€</span>
+                    <input type="number" id="proj-extra" min="0" step="50" placeholder="0" oninput="renderProjection()">
+                </div>
+                <span>más al mes, en 5 años tendréis <strong id="proj-5y-sim" style="color:var(--green)">0 €</strong> adicionales</span>
+            </div>
         </div>
     </div>
 
@@ -1269,7 +1365,8 @@
         travelPct: 50,
         nextId: 20,
         history: [],
-        darkMode: false
+        darkMode: false,
+        expenseLog: []
     };
 
     let _ignoreNext = false;
@@ -1419,10 +1516,8 @@
 
         renderTravel(travelMonthly());
 
-        setText('ann-income',   eur(inc * 12));
-        setText('ann-expenses', eur(exp * 12));
-        setText('ann-savings',  eur(sav * 12));
-        setText('savings-5y',   eur(sav * 60));
+        renderProjection();
+        renderLog();
         renderHistory();
     }
 
@@ -1875,6 +1970,129 @@
         renderHistory();
         schedSave();
     };
+
+    // ─── Registro de gastos reales ────────────────────────────────────────────
+    window.addLogEntry = function() {
+        if (!S.expenseLog) S.expenseLog = [];
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        S.expenseLog.unshift({ id: S.nextId++, date: dateStr, name: '', amount: 0 });
+        renderLog();
+        schedSave();
+        setTimeout(() => {
+            const inp = el('log-container')?.querySelector('input[data-field="name"]');
+            if (inp) inp.focus();
+        }, 30);
+    };
+
+    window.delLogEntry = function(id) {
+        S.expenseLog = (S.expenseLog || []).filter(e => e.id !== id);
+        renderLog();
+        schedSave();
+    };
+
+    window.updLogField = function(input) {
+        const id    = +input.dataset.id;
+        const field = input.dataset.field;
+        const entry = (S.expenseLog || []).find(e => e.id === id);
+        if (!entry) return;
+        entry[field] = field === 'amount' ? (+input.value || 0) : input.value;
+        if (field === 'amount') renderLog();
+        schedSave();
+    };
+
+    function renderLog() {
+        const summaryEl   = el('log-summary');
+        const containerEl = el('log-container');
+        if (!summaryEl || !containerEl) return;
+
+        const log = S.expenseLog || [];
+        const now = new Date();
+        const mk  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        const thisMonth   = log.filter(e => e.date && e.date.startsWith(mk));
+        const totalLogged = thisMonth.reduce((a, e) => a + (e.amount || 0), 0);
+        const budgeted    = totalExpenses();
+        const margin      = budgeted - totalLogged;
+
+        summaryEl.innerHTML = log.length === 0 ? '' : `
+            <div class="log-summary">
+                <div class="log-summary-item">
+                    <div class="ls-val">${eur(totalLogged)}</div>
+                    <div class="ls-lbl">Gastado este mes</div>
+                </div>
+                <div class="log-summary-item">
+                    <div class="ls-val">${eur(budgeted)}</div>
+                    <div class="ls-lbl">Presupuesto</div>
+                </div>
+                <div class="log-summary-item">
+                    <div class="ls-val ${margin >= 0 ? 'green' : 'red'}">${margin >= 0 ? eur(margin) : '−' + eur(Math.abs(margin))}</div>
+                    <div class="ls-lbl">${margin >= 0 ? 'Margen' : 'Pasado'}</div>
+                </div>
+            </div>`;
+
+        if (log.length === 0) {
+            containerEl.innerHTML = '<div class="log-empty">Sin gastos registrados. Pulsa "+ Añadir" para empezar.</div>';
+            return;
+        }
+
+        const totalAll = log.reduce((a, e) => a + (e.amount || 0), 0);
+        containerEl.innerHTML = `
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th style="width:118px">Fecha</th>
+                        <th>Concepto</th>
+                        <th class="right" style="width:130px">€</th>
+                        <th class="center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${log.map(e => `<tr>
+                        <td><input type="date" value="${esc(e.date)}"
+                            data-id="${e.id}" data-field="date"
+                            onchange="updLogField(this)"></td>
+                        <td><input type="text" value="${esc(e.name)}" placeholder="Concepto"
+                            data-id="${e.id}" data-field="name"
+                            onchange="updLogField(this)"></td>
+                        <td class="amount-col"><input type="number" value="${e.amount || ''}" min="0" step="1" placeholder="0"
+                            data-id="${e.id}" data-field="amount"
+                            onchange="updLogField(this)"></td>
+                        <td><button class="btn-delete" onclick="delLogEntry(${e.id})">✕</button></td>
+                    </tr>`).join('')}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Total registrado</td>
+                        <td class="amount-col right">${eur(totalAll)}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>`;
+    }
+
+    // ─── Proyección a largo plazo ─────────────────────────────────────────────
+    function renderProjection() {
+        const sav   = savingsAmt();
+        const extra = +(el('proj-extra')?.value || 0);
+
+        setText('ann-income',   eur(totalIncome()   * 12));
+        setText('ann-expenses', eur(totalExpenses() * 12));
+        setText('ann-savings',  eur(sav * 12));
+
+        [[1, '1y'], [3, '3y'], [5, '5y']].forEach(([years, id]) => {
+            const months  = years * 12;
+            const base    = sav * months;
+            const addl    = extra * months;
+            const valEl   = el('proj-' + id);
+            const extraEl = el('proj-' + id + '-extra');
+            if (valEl)   valEl.textContent   = eur(base);
+            if (extraEl) extraEl.textContent = extra > 0 ? `+${eur(addl)} con extra` : '';
+        });
+
+        const sim5 = el('proj-5y-sim');
+        if (sim5) sim5.textContent = eur(extra * 60);
+    }
+    window.renderProjection = renderProjection;
 
     // ─── Toast ────────────────────────────────────────────────────────────────
     function toast(msg) {
