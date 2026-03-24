@@ -1738,6 +1738,7 @@
     // ─── Historial mensual ────────────────────────────────────────────────────
     function autoSaveCurrentMonth() {
         if (!S.history) S.history = [];
+        else if (!Array.isArray(S.history)) S.history = Object.values(S.history);
         const now      = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
         const existing = S.history.find(h => h.month === monthKey);
@@ -1748,7 +1749,7 @@
             income:        totalIncome(),
             expenses:      totalExpenses(),
             savingsTarget: savingsAmt(),
-            actualSavings: existing ? existing.actualSavings : null,
+            actualSavings: (existing?.actualSavings) ?? null,
             free:          freeAmt()
         };
         if (existing) {

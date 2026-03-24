@@ -79,3 +79,4 @@ Sección para planificar viajes con:
 | 2026-03-23 | Modo oscuro: toggle 🌙/☀️ en header, persiste en Firebase, cubre todos los componentes |
 | 2026-03-23 | Historial mensual: "Guardar mes" toma snapshot del mes actual, tarjetas editables por mes |
 | 2026-03-23 | Ahorro acumulado: barra de progreso real vs objetivo, campo editable de ahorro real por mes |
+| 2026-03-24 | Corregir bug de sincronización: `actualSavings: undefined` causaba error síncrono en Firebase dejando la app en "Guardando..." |
