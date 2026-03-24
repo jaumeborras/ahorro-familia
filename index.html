@@ -2093,12 +2093,11 @@
 
         [[1, '1y'], [3, '3y'], [5, '5y']].forEach(([years, id]) => {
             const months  = years * 12;
-            const base    = sav * months;
-            const addl    = extra * months;
+            const total   = (sav + extra) * months;
             const valEl   = el('proj-' + id);
             const extraEl = el('proj-' + id + '-extra');
-            if (valEl)   valEl.textContent   = eur(base);
-            if (extraEl) extraEl.textContent = extra > 0 ? `+${eur(addl)} con extra` : '';
+            if (valEl)   valEl.textContent   = eur(total);
+            if (extraEl) extraEl.textContent = '';
         });
 
         const sim5 = el('proj-5y-sim');
