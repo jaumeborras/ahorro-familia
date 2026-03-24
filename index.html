@@ -1420,7 +1420,7 @@
     function travelMonthly() { return Math.max(0, freeAmt()) * ((S.travelPct || 0) / 100); }
 
     // ─── Formatting ───────────────────────────────────────────────────────────
-    function eur(n) { return Math.round(n).toLocaleString('es-ES') + ' €'; }
+    function eur(n) { return Math.round(n).toLocaleString('es-ES') + '\u00a0€'; }
     function pct(n) { return Math.round(n) + '%'; }
 
     function targetDate(months) {
