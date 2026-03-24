@@ -391,7 +391,11 @@
         .expense-table td input:focus { background: #f0f7ff; }
 
         .expense-table td.amount-col { width: 130px; }
-        .expense-table td.amount-col input { text-align: right; font-weight: 700; }
+        .expense-table td.amount-col input {
+            text-align: right; font-weight: 700;
+            background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+        }
+        .expense-table td.amount-col input:focus { border-color: var(--primary); }
 
         .expense-table tfoot td {
             padding: 10px 10px;
@@ -897,15 +901,18 @@
         .hg-val.green { color: var(--green); }
         .hg-input {
             width: 100%;
-            border: none;
+            border: 1.5px solid var(--border);
+            border-radius: 7px;
             outline: none;
             font-size: 14px;
             font-weight: 800;
             color: var(--primary);
-            background: transparent;
+            background: var(--card);
             font-family: inherit;
-            padding: 0;
+            padding: 5px 8px;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
+        .hg-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
         .hg-input::placeholder { color: var(--text-muted); font-weight: 600; font-size: 13px; }
 
         /* ── Ahorro acumulado ────────────────────────────────────────────────── */
@@ -1015,36 +1022,10 @@
             margin-left: 8px;
         }
 
-        /* ── Registro de gastos reales ───────────────────────────────────────── */
-        .log-summary {
-            display: flex;
-            gap: 8px;
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 14px 12px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-        .log-summary-item {
-            flex: 1;
-            min-width: 80px;
-            text-align: center;
-            padding: 8px 4px;
-        }
-        .log-summary-item .ls-val { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1; }
-        .log-summary-item .ls-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-top: 4px; }
-        .ls-val.green { color: var(--green); }
-        .ls-val.red   { color: var(--red); }
-        .log-empty { text-align: center; color: var(--text-muted); padding: 24px; font-size: 14px; }
-        .expense-table td input[type="date"] {
-            width: 100%; border: none; outline: none;
-            padding: 8px 6px; font-size: 13px;
-            color: var(--text); background: transparent;
-            font-family: inherit; border-radius: 7px;
-            transition: background 0.15s;
-        }
-        .expense-table td input[type="date"]:focus { background: #f0f7ff; }
-        body.dark .expense-table td input[type="date"]:focus { background: rgba(59,130,246,0.1); }
+        /* ── Sin flechas en inputs numéricos ────────────────────────────────── */
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         /* ── Proyección a largo plazo ────────────────────────────────────────── */
         .proj-year-cards {
@@ -1060,7 +1041,7 @@
             text-align: center;
         }
         .proj-card .pc-years { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 6px; }
-        .proj-card .pc-val   { font-size: 22px; font-weight: 800; color: var(--green); line-height: 1.1; }
+        .proj-card .pc-val   { font-size: clamp(14px, 4vw, 22px); font-weight: 800; color: var(--green); line-height: 1.2; word-break: break-word; }
         .proj-card .pc-extra { font-size: 11px; color: var(--primary); font-weight: 700; margin-top: 5px; min-height: 14px; }
         .proj-simulator {
             background: var(--bg);
@@ -1256,15 +1237,6 @@
     </div>
 
     <div class="card">
-        <div class="section-header">
-            <div class="card-title">Gastos reales del mes</div>
-            <button class="btn-primary" onclick="addLogEntry()">+ Añadir</button>
-        </div>
-        <div id="log-summary"></div>
-        <div id="log-container"><div class="log-empty">Sin gastos registrados. Pulsa "+ Añadir" para empezar.</div></div>
-    </div>
-
-    <div class="card">
         <div class="card-title">Proyección</div>
         <div class="annual-row">
             <div class="annual-card a-income">
@@ -1302,7 +1274,7 @@
             <div class="proj-sim-row">
                 <span>Si ahorro</span>
                 <div class="input-group">
-                    <span class="input-prefix">+€</span>
+                    <span class="input-prefix">€</span>
                     <input type="number" id="proj-extra" min="0" step="50" placeholder="0" oninput="renderProjection()">
                 </div>
                 <span>más al mes, en 5 años tendréis <strong id="proj-5y-sim" style="color:var(--green)">0 €</strong> adicionales</span>
@@ -1517,7 +1489,6 @@
         renderTravel(travelMonthly());
 
         renderProjection();
-        renderLog();
         renderHistory();
     }
 
@@ -1970,105 +1941,6 @@
         renderHistory();
         schedSave();
     };
-
-    // ─── Registro de gastos reales ────────────────────────────────────────────
-    window.addLogEntry = function() {
-        if (!S.expenseLog) S.expenseLog = [];
-        const now = new Date();
-        const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-        S.expenseLog.unshift({ id: S.nextId++, date: dateStr, name: '', amount: 0 });
-        renderLog();
-        schedSave();
-        setTimeout(() => {
-            const inp = el('log-container')?.querySelector('input[data-field="name"]');
-            if (inp) inp.focus();
-        }, 30);
-    };
-
-    window.delLogEntry = function(id) {
-        S.expenseLog = (S.expenseLog || []).filter(e => e.id !== id);
-        renderLog();
-        schedSave();
-    };
-
-    window.updLogField = function(input) {
-        const id    = +input.dataset.id;
-        const field = input.dataset.field;
-        const entry = (S.expenseLog || []).find(e => e.id === id);
-        if (!entry) return;
-        entry[field] = field === 'amount' ? (+input.value || 0) : input.value;
-        if (field === 'amount') renderLog();
-        schedSave();
-    };
-
-    function renderLog() {
-        const summaryEl   = el('log-summary');
-        const containerEl = el('log-container');
-        if (!summaryEl || !containerEl) return;
-
-        const log = S.expenseLog || [];
-        const now = new Date();
-        const mk  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        const thisMonth   = log.filter(e => e.date && e.date.startsWith(mk));
-        const totalLogged = thisMonth.reduce((a, e) => a + (e.amount || 0), 0);
-        const budgeted    = totalExpenses();
-        const margin      = budgeted - totalLogged;
-
-        summaryEl.innerHTML = log.length === 0 ? '' : `
-            <div class="log-summary">
-                <div class="log-summary-item">
-                    <div class="ls-val">${eur(totalLogged)}</div>
-                    <div class="ls-lbl">Gastado este mes</div>
-                </div>
-                <div class="log-summary-item">
-                    <div class="ls-val">${eur(budgeted)}</div>
-                    <div class="ls-lbl">Presupuesto</div>
-                </div>
-                <div class="log-summary-item">
-                    <div class="ls-val ${margin >= 0 ? 'green' : 'red'}">${margin >= 0 ? eur(margin) : '−' + eur(Math.abs(margin))}</div>
-                    <div class="ls-lbl">${margin >= 0 ? 'Margen' : 'Pasado'}</div>
-                </div>
-            </div>`;
-
-        if (log.length === 0) {
-            containerEl.innerHTML = '<div class="log-empty">Sin gastos registrados. Pulsa "+ Añadir" para empezar.</div>';
-            return;
-        }
-
-        const totalAll = log.reduce((a, e) => a + (e.amount || 0), 0);
-        containerEl.innerHTML = `
-            <table class="expense-table">
-                <thead>
-                    <tr>
-                        <th style="width:118px">Fecha</th>
-                        <th>Concepto</th>
-                        <th class="right" style="width:130px">€</th>
-                        <th class="center"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${log.map(e => `<tr>
-                        <td><input type="date" value="${esc(e.date)}"
-                            data-id="${e.id}" data-field="date"
-                            onchange="updLogField(this)"></td>
-                        <td><input type="text" value="${esc(e.name)}" placeholder="Concepto"
-                            data-id="${e.id}" data-field="name"
-                            onchange="updLogField(this)"></td>
-                        <td class="amount-col"><input type="number" value="${e.amount || ''}" min="0" step="1" placeholder="0"
-                            data-id="${e.id}" data-field="amount"
-                            onchange="updLogField(this)"></td>
-                        <td><button class="btn-delete" onclick="delLogEntry(${e.id})">✕</button></td>
-                    </tr>`).join('')}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="2">Total registrado</td>
-                        <td class="amount-col right">${eur(totalAll)}</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>`;
-    }
 
     // ─── Proyección a largo plazo ─────────────────────────────────────────────
     function renderProjection() {
