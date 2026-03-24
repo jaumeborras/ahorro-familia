@@ -1057,6 +1057,49 @@
             flex-wrap: wrap; font-size: 13px; color: var(--text-muted);
         }
         .proj-sim-row .input-group { max-width: 150px; flex-shrink: 0; }
+
+        /* ── Simulador de cambio de vida ─────────────────────────────────────── */
+        .sim-section { margin-bottom: 18px; }
+        .sim-section-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .06em; color: var(--text-muted); margin-bottom: 10px;
+        }
+        .sim-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .sim-preset-btn {
+            padding: 6px 14px; border: 1.5px solid var(--border);
+            border-radius: 20px; background: none; cursor: pointer;
+            font-size: 12px; font-weight: 700; color: var(--text-muted);
+            font-family: inherit; transition: all 0.15s; white-space: nowrap;
+        }
+        .sim-preset-btn:hover { border-color: #94a3b8; color: var(--text); }
+        .sim-preset-btn.active { border-color: var(--primary); background: rgba(59,130,246,0.1); color: var(--primary); }
+        .sim-results {
+            background: var(--bg); border-radius: 12px; padding: 16px; margin-top: 6px;
+        }
+        .sim-results-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .06em; color: var(--text-muted); margin-bottom: 12px;
+        }
+        .sim-results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        @media (min-width: 500px) { .sim-results-grid { grid-template-columns: repeat(4, 1fr); } }
+        .sim-result-item { text-align: center; }
+        .sim-result-item .sr-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); margin-bottom: 4px; }
+        .sim-result-item .sr-val { font-size: min(4vw, 18px); font-weight: 800; color: var(--text); white-space: nowrap; }
+        .sim-result-item .sr-delta { font-size: 11px; font-weight: 700; margin-top: 3px; min-height: 15px; }
+        .sr-val.sim-neg  { color: var(--red); }
+        .sr-val.sim-warn { color: var(--orange); }
+        .sr-delta.sim-up   { color: var(--green); }
+        .sr-delta.sim-down { color: var(--red); }
+
+        /* ── Coste de oportunidad ────────────────────────────────────────────── */
+        .opp-table { width: 100%; border-collapse: separate; border-spacing: 5px; margin-top: 14px; }
+        .opp-table thead th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); text-align: center; padding: 4px 4px 10px; }
+        .opp-table thead th:first-child { text-align: left; }
+        .opp-table tbody td { background: var(--bg); border-radius: 8px; padding: 10px 6px; text-align: center; }
+        .opp-table tbody td.opp-rl { background: transparent; font-size: 12px; font-weight: 700; color: var(--text-muted); text-align: left; padding-left: 0; white-space: nowrap; vertical-align: middle; }
+        .opp-val { font-size: 14px; font-weight: 800; color: var(--green); white-space: nowrap; }
+        .opp-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; text-align: center; }
+        .opp-empty { font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -1288,6 +1331,101 @@
         <div id="history-container"></div>
     </div>
 
+    <div class="card">
+        <div class="card-title">Simulador de cambio de vida</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">Simula cualquier cambio en vuestra situación y ve el impacto en tiempo real.</div>
+
+        <div class="sim-presets">
+            <button class="sim-preset-btn" id="sim-btn-excj"   onclick="simPreset('excj')"  >Jaime en excedencia</button>
+            <button class="sim-preset-btn" id="sim-btn-excm"   onclick="simPreset('excm')"  >Marina en excedencia</button>
+            <button class="sim-preset-btn" id="sim-btn-hijo"   onclick="simPreset('hijo')"  >Tener un hijo</button>
+            <button class="sim-preset-btn" id="sim-btn-compra" onclick="simPreset('compra')">Comprar vivienda</button>
+            <button class="sim-preset-btn" onclick="simReset()">↺ Resetear</button>
+        </div>
+
+        <div class="sim-section">
+            <div class="sim-section-title">Ingresos</div>
+            <div class="two-col">
+                <div class="income-person">
+                    <div class="person-label"><div class="avatar avatar-j">J</div><span>Jaime</span></div>
+                    <div class="input-group">
+                        <span class="input-prefix">€</span>
+                        <input type="number" id="sim-jaime" min="0" step="50" placeholder="Sin cambios" oninput="renderSim()">
+                    </div>
+                </div>
+                <div class="income-person">
+                    <div class="person-label"><div class="avatar avatar-m">M</div><span>Marina</span></div>
+                    <div class="input-group">
+                        <span class="input-prefix">€</span>
+                        <input type="number" id="sim-marina" min="0" step="50" placeholder="Sin cambios" oninput="renderSim()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sim-section">
+            <div class="sim-section-title">Gastos</div>
+            <div style="display:flex; flex-direction:column; gap:12px">
+                <div>
+                    <div class="field-label">Nuevo gasto mensual (guardería, coche, reforma...)</div>
+                    <div class="input-group">
+                        <span class="input-prefix">€</span>
+                        <input type="number" id="sim-extra" min="0" step="50" placeholder="0" oninput="renderSim()">
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Subida de gastos fijos (alquiler, hipoteca...)</div>
+                    <div class="input-group">
+                        <span class="input-prefix">+€</span>
+                        <input type="number" id="sim-fixed-inc" min="0" step="10" placeholder="0" oninput="renderSim()">
+                    </div>
+                </div>
+                <div>
+                    <div class="field-label">Reducir gastos variables — <span id="sim-var-lbl">0%</span></div>
+                    <input type="range" id="sim-var-red" min="0" max="100" step="5" value="0"
+                        oninput="renderSim()"
+                        style="width:100%; accent-color:var(--primary); margin-top:6px; cursor:pointer">
+                </div>
+            </div>
+        </div>
+
+        <div class="sim-results">
+            <div class="sim-results-label">Nueva situación vs actual</div>
+            <div class="sim-results-grid">
+                <div class="sim-result-item">
+                    <div class="sr-lbl">Ingresos</div>
+                    <div class="sr-val" id="sim-r-inc">—</div>
+                    <div class="sr-delta" id="sim-d-inc"></div>
+                </div>
+                <div class="sim-result-item">
+                    <div class="sr-lbl">Gastos</div>
+                    <div class="sr-val" id="sim-r-exp">—</div>
+                    <div class="sr-delta" id="sim-d-exp"></div>
+                </div>
+                <div class="sim-result-item">
+                    <div class="sr-lbl">Ahorro</div>
+                    <div class="sr-val" id="sim-r-sav">—</div>
+                    <div class="sr-delta" id="sim-d-sav"></div>
+                </div>
+                <div class="sim-result-item">
+                    <div class="sr-lbl">Libre</div>
+                    <div class="sr-val" id="sim-r-free">—</div>
+                    <div class="sr-delta" id="sim-d-free"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Coste de oportunidad</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px">¿Cuánto valdría ese gasto mensual si lo ahorraras en su lugar?</div>
+        <div class="input-group" style="max-width:200px">
+            <span class="input-prefix">€</span>
+            <input type="number" id="opp-amount" min="0" step="10" placeholder="€ / mes" oninput="renderOpp()">
+        </div>
+        <div id="opp-results"><div class="opp-empty">Introduce un importe para ver el análisis.</div></div>
+    </div>
+
 </main>
 
 <div class="toast" id="toast"></div>
@@ -1490,6 +1628,8 @@
 
         renderProjection();
         renderHistory();
+        renderSim();
+        renderOpp();
     }
 
     function setSeg(id, width, label) {
@@ -1965,6 +2105,119 @@
         if (sim5) sim5.textContent = eur(extra * 60);
     }
     window.renderProjection = renderProjection;
+
+    // ─── Simulador de cambio de vida ──────────────────────────────────────────
+    function renderSim() {
+        const jInp = el('sim-jaime'), mInp = el('sim-marina');
+        if (!jInp) return;
+
+        const simJ   = jInp.value  !== '' ? +jInp.value  : (S.income.jaime  || 0);
+        const simM   = mInp.value  !== '' ? +mInp.value  : (S.income.marina || 0);
+        const simInc = simJ + simM;
+
+        const extraExp = +(el('sim-extra')?.value     || 0);
+        const fixedInc = +(el('sim-fixed-inc')?.value || 0);
+        const varSlider = el('sim-var-red');
+        const varRed   = +(varSlider?.value || 0) / 100;
+
+        const lbl = el('sim-var-lbl');
+        if (lbl && varSlider) lbl.textContent = varSlider.value + '%';
+
+        const simFixed = totalFixed() + fixedInc;
+        const simVar   = totalVariable() * (1 - varRed) + extraExp;
+        const simExp   = simFixed + simVar;
+        const simSav   = S.savings.type === 'percentage'
+            ? simInc * ((S.savings.value || 0) / 100)
+            : (S.savings.value || 0);
+        const simFree  = simInc - simExp - simSav;
+
+        const curInc  = totalIncome();
+        const curExp  = totalExpenses();
+        const curSav  = savingsAmt();
+        const curFree = freeAmt();
+
+        function setR(vId, dId, newVal, oldVal, lessIsBetter) {
+            const vEl = el(vId), dEl = el(dId);
+            if (!vEl) return;
+            vEl.textContent = eur(newVal);
+            const diff = Math.round(newVal - oldVal);
+            vEl.className = 'sr-val' +
+                (vId === 'sim-r-free' && newVal < 0    ? ' sim-neg'  :
+                 vId === 'sim-r-free' && newVal < 100  ? ' sim-warn' : '');
+            if (dEl) {
+                dEl.textContent = diff === 0 ? '' : (diff > 0 ? '+' : '') + eur(diff);
+                const good = lessIsBetter ? diff <= 0 : diff >= 0;
+                dEl.className = 'sr-delta' + (diff === 0 ? '' : good ? ' sim-up' : ' sim-down');
+            }
+        }
+
+        setR('sim-r-inc',  'sim-d-inc',  simInc,  curInc,  false);
+        setR('sim-r-exp',  'sim-d-exp',  simExp,  curExp,  true);
+        setR('sim-r-sav',  'sim-d-sav',  simSav,  curSav,  false);
+        setR('sim-r-free', 'sim-d-free', simFree, curFree, false);
+    }
+    window.renderSim = renderSim;
+
+    window.simPreset = function(type) {
+        const btn  = el('sim-btn-' + type);
+        const isOn = btn?.classList.contains('active');
+        const presets = {
+            excj:   () => { el('sim-jaime').value     = isOn ? '' : '0'; },
+            excm:   () => { el('sim-marina').value    = isOn ? '' : '0'; },
+            hijo:   () => { el('sim-extra').value     = isOn ? '' : '700'; },
+            compra: () => { el('sim-fixed-inc').value = isOn ? '' : '500'; },
+        };
+        presets[type]?.();
+        btn?.classList.toggle('active');
+        renderSim();
+    };
+
+    window.simReset = function() {
+        ['sim-jaime','sim-marina','sim-extra','sim-fixed-inc'].forEach(id => {
+            const i = el(id); if (i) i.value = '';
+        });
+        const r = el('sim-var-red'); if (r) r.value = 0;
+        ['sim-btn-excj','sim-btn-excm','sim-btn-hijo','sim-btn-compra'].forEach(id => {
+            el(id)?.classList.remove('active');
+        });
+        renderSim();
+    };
+
+    // ─── Coste de oportunidad ─────────────────────────────────────────────────
+    function renderOpp() {
+        const resultsEl = el('opp-results');
+        if (!resultsEl) return;
+        const monthly = +(el('opp-amount')?.value || 0);
+        if (!monthly) {
+            resultsEl.innerHTML = '<div class="opp-empty">Introduce un importe para ver el análisis.</div>';
+            return;
+        }
+        function fv(pmt, years, rate) {
+            const n = years * 12;
+            if (rate === 0) return pmt * n;
+            const r = Math.pow(1 + rate, 1 / 12) - 1;
+            return pmt * (Math.pow(1 + r, n) - 1) / r;
+        }
+        const periods = [5, 10, 20];
+        const rates   = [[0, 'Sin invertir'], [0.03, '3% anual'], [0.06, '6% anual']];
+        const curSav  = savingsAmt();
+        const equiv   = curSav > 0 ? Math.round(fv(monthly, 10, 0.03) / curSav) : null;
+        resultsEl.innerHTML = `
+            <table class="opp-table">
+                <thead><tr>
+                    <th></th>
+                    ${periods.map(y => `<th>${y} años</th>`).join('')}
+                </tr></thead>
+                <tbody>
+                    ${rates.map(([r, lbl]) => `<tr>
+                        <td class="opp-rl">${lbl}</td>
+                        ${periods.map(y => `<td><div class="opp-val">${eur(fv(monthly, y, r))}</div></td>`).join('')}
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+            ${equiv ? `<div class="opp-note">A 10 años al 3%, equivale a <strong>${equiv} meses</strong> de tu ahorro objetivo actual</div>` : ''}`;
+    }
+    window.renderOpp = renderOpp;
 
     // ─── Toast ────────────────────────────────────────────────────────────────
     function toast(msg) {
