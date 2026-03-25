@@ -1407,11 +1407,6 @@
         </div>
     </div>
 
-    <div class="card section-start" id="sec-historial">
-        <div class="card-title">Historial y ahorro acumulado</div>
-        <div id="savings-accum"></div>
-        <div id="history-container"></div>
-    </div>
 
     <div class="card section-start" id="sec-simulador">
         <div class="card-title">Simulador de cambio de vida</div>
@@ -1500,7 +1495,8 @@
 
     <div class="card">
         <div class="card-title">Coste de oportunidad</div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px">¿Cuánto valdría ese gasto mensual si lo ahorraras en su lugar?</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px">¿Cuánto valdría ese gasto mensual si lo ahorraras en su lugar?</div>
+        <div style="font-size:11px; color:var(--text-muted); font-style:italic; margin-bottom:14px">ej. ¿Cuánto nos ahorraríamos al mes si dejamos de pagar Netflix?</div>
         <div class="input-group" style="max-width:200px">
             <span class="input-prefix">€</span>
             <input type="number" id="opp-amount" min="0" step="10" placeholder="€ / mes" oninput="renderOpp()">
@@ -2380,8 +2376,11 @@
     render();
     applyDark();
 
-    // ─── Teclado numérico en móvil ────────────────────────────────────────────
-    document.querySelectorAll('input[type="number"]').forEach(i => i.inputMode = 'decimal');
+    // ─── Teclado numérico en móvil + seleccionar contenido al hacer foco ─────
+    document.querySelectorAll('input[type="number"]').forEach(i => {
+        i.inputMode = 'decimal';
+        i.addEventListener('focus', () => i.select());
+    });
 
 </script>
 
