@@ -1249,7 +1249,7 @@
                     </div>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
-                        <input type="number" id="income-jaime" min="0" step="50" placeholder="0">
+                        <input type="number" inputmode="decimal" id="income-jaime" min="0" step="50" placeholder="0">
                     </div>
                 </div>
                 <div class="income-person">
@@ -1260,7 +1260,7 @@
                     </div>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
-                        <input type="number" id="income-marina" min="0" step="50" placeholder="0">
+                        <input type="number" inputmode="decimal" id="income-marina" min="0" step="50" placeholder="0">
                     </div>
                 </div>
             </div>
@@ -1274,7 +1274,7 @@
             </div>
             <div class="input-group">
                 <span class="input-prefix" id="savings-prefix">%</span>
-                <input type="number" id="savings-value" min="0" step="1" placeholder="20">
+                <input type="number" inputmode="decimal" id="savings-value" min="0" step="1" placeholder="20">
             </div>
             <div class="savings-result">
                 Reservas <strong id="savings-display">—</strong> al mes para ahorro.
@@ -1410,7 +1410,7 @@
                 <span>Si ahorro</span>
                 <div class="input-group">
                     <span class="input-prefix">€</span>
-                    <input type="number" id="proj-extra" min="0" step="50" placeholder="0" oninput="renderProjection()">
+                    <input type="number" inputmode="decimal" id="proj-extra" min="0" step="50" placeholder="0" oninput="renderProjection()">
                 </div>
                 <span>más al mes, en 5 años tendréis <strong id="proj-5y-sim" style="color:var(--green)">0 €</strong> adicionales</span>
             </div>
@@ -1438,14 +1438,14 @@
                     <div class="person-label"><div class="avatar avatar-j">J</div><span>Jaime</span></div>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
-                        <input type="number" id="sim-jaime" min="0" step="50" placeholder="Sin cambios" oninput="renderSim()">
+                        <input type="number" inputmode="decimal" id="sim-jaime" min="0" step="50" placeholder="Sin cambios" oninput="renderSim()">
                     </div>
                 </div>
                 <div class="income-person">
                     <div class="person-label"><div class="avatar avatar-m">M</div><span>Marina</span></div>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
-                        <input type="number" id="sim-marina" min="0" step="50" placeholder="Sin cambios" oninput="renderSim()">
+                        <input type="number" inputmode="decimal" id="sim-marina" min="0" step="50" placeholder="Sin cambios" oninput="renderSim()">
                     </div>
                 </div>
             </div>
@@ -1458,14 +1458,14 @@
                     <div class="field-label">Nuevo gasto mensual (guardería, coche, reforma...)</div>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
-                        <input type="number" id="sim-extra" min="0" step="50" placeholder="0" oninput="renderSim()">
+                        <input type="number" inputmode="decimal" id="sim-extra" min="0" step="50" placeholder="0" oninput="renderSim()">
                     </div>
                 </div>
                 <div>
                     <div class="field-label">Subida de gastos fijos (alquiler, hipoteca...)</div>
                     <div class="input-group">
                         <span class="input-prefix">€</span>
-                        <input type="number" id="sim-fixed-inc" min="0" step="10" placeholder="0" oninput="renderSim()">
+                        <input type="number" inputmode="decimal" id="sim-fixed-inc" min="0" step="10" placeholder="0" oninput="renderSim()">
                     </div>
                 </div>
                 <div>
@@ -1510,7 +1510,7 @@
         <div style="font-size:11px; color:var(--text-muted); font-style:italic; margin-bottom:14px">ej. ¿Cuánto nos ahorraríamos al mes si dejamos de pagar Netflix?</div>
         <div class="input-group" style="max-width:200px">
             <span class="input-prefix">€</span>
-            <input type="number" id="opp-amount" min="0" step="10" placeholder="€ / mes" oninput="renderOpp()">
+            <input type="number" inputmode="decimal" id="opp-amount" min="0" step="10" placeholder="€ / mes" oninput="renderOpp()">
         </div>
         <div id="opp-results"><div class="opp-empty">Introduce un importe para ver el análisis.</div></div>
     </div>
@@ -1742,7 +1742,7 @@
                     data-id="${exp.id}" data-field="name" data-type="${type}"
                     onchange="updExpName(this)"></td>
                  <td class="amount-col">
-                    <input type="number" value="${exp.amount || ''}" min="0" step="10" placeholder="0"
+                    <input type="number" inputmode="decimal" value="${exp.amount || ''}" min="0" step="10" placeholder="0"
                         data-id="${exp.id}" data-field="amount" data-type="${type}"
                         onchange="updExpAmt(this)">
                  </td>
@@ -1919,7 +1919,7 @@
                         <div class="field-label">Presupuesto</div>
                         <div class="input-group">
                             <span class="input-prefix">€</span>
-                            <input type="number" value="${g.amount || ''}" min="0" step="100" placeholder="0"
+                            <input type="number" inputmode="decimal" value="${g.amount || ''}" min="0" step="100" placeholder="0"
                                 onchange="updTravelAmt(${g.id}, +this.value)">
                         </div>
                     </div>
