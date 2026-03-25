@@ -83,3 +83,4 @@ Sección para planificar viajes con:
 | 2026-03-24 | Añadir registro de gastos reales del mes: tabla con fecha/concepto/importe, resumen con margen vs presupuesto |
 | 2026-03-24 | Ampliar proyección: cards de 1/3/5 años y simulador de ahorro extra mensual |
 | 2026-03-24 | Añadir simulador de cambio de vida con presets (excedencia, hijo, compra) y coste de oportunidad con tabla 3×3 |
+| 2026-03-25 | Títulos de sección más visibles: aumentado tamaño a 15px, eliminadas mayúsculas y color gris |
