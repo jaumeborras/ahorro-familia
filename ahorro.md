@@ -84,3 +84,4 @@ Sección para planificar viajes con:
 | 2026-03-24 | Ampliar proyección: cards de 1/3/5 años y simulador de ahorro extra mensual |
 | 2026-03-24 | Añadir simulador de cambio de vida con presets (excedencia, hijo, compra) y coste de oportunidad con tabla 3×3 |
 | 2026-03-25 | Títulos de sección más visibles: aumentado tamaño a 15px, eliminadas mayúsculas y color gris |
+| 2026-03-25 | Fecha del header rediseñada como widget estilo Calendario iOS (día en rojo, mes en gris, número grande), al lado del toggle de modo oscuro, ambos del mismo tamaño |
