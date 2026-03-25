@@ -112,7 +112,7 @@
         main {
             max-width: 960px;
             margin: 0 auto;
-            padding: 28px 16px calc(80px + env(safe-area-inset-bottom));
+            padding: 28px 16px 48px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -1176,37 +1176,6 @@
         body.dark .metric-card.savings  { background: rgba(22,163,74,0.14); }
         body.dark .metric-card.free     { background: rgba(217,119,6,0.14); }
 
-        /* ── Barra de navegación inferior ────────────────────────────────────── */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: white;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 6px 0 max(8px, env(safe-area-inset-bottom));
-            z-index: 30;
-            box-shadow: 0 -1px 8px rgba(0,0,0,0.06);
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            cursor: pointer;
-            padding: 4px 10px;
-            border-radius: 10px;
-            background: none;
-            border: none;
-            font-family: inherit;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .nav-icon { font-size: 20px; line-height: 1; transition: transform 0.15s; }
-        .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.01em; }
-        .nav-item.active .nav-label { color: var(--primary); }
-        .nav-item.active .nav-icon  { transform: scale(1.15); }
-        body.dark .bottom-nav { background: var(--card); border-top-color: var(--border); }
     </style>
 </head>
 <body>
@@ -2414,44 +2383,7 @@
     // ─── Teclado numérico en móvil ────────────────────────────────────────────
     document.querySelectorAll('input[type="number"]').forEach(i => i.inputMode = 'decimal');
 
-    // ─── Navegación inferior ──────────────────────────────────────────────────
-    const _navSections = ['sec-resumen','sec-gastos','sec-proyeccion','sec-historial','sec-simulador'];
-    window.navTo = function(id) {
-        const target = document.getElementById(id);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.target === id));
-    };
-    window.addEventListener('scroll', () => {
-        let current = _navSections[0];
-        for (const sid of _navSections) {
-            const s = document.getElementById(sid);
-            if (s && s.getBoundingClientRect().top <= 100) current = sid;
-        }
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.target === current));
-    }, { passive: true });
 </script>
 
-<nav class="bottom-nav">
-    <button class="nav-item active" data-target="sec-resumen" onclick="navTo('sec-resumen')">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Resumen</span>
-    </button>
-    <button class="nav-item" data-target="sec-gastos" onclick="navTo('sec-gastos')">
-        <span class="nav-icon">💸</span>
-        <span class="nav-label">Gastos</span>
-    </button>
-    <button class="nav-item" data-target="sec-proyeccion" onclick="navTo('sec-proyeccion')">
-        <span class="nav-icon">📈</span>
-        <span class="nav-label">Proyección</span>
-    </button>
-    <button class="nav-item" data-target="sec-historial" onclick="navTo('sec-historial')">
-        <span class="nav-icon">🗓</span>
-        <span class="nav-label">Historial</span>
-    </button>
-    <button class="nav-item" data-target="sec-simulador" onclick="navTo('sec-simulador')">
-        <span class="nav-icon">🔮</span>
-        <span class="nav-label">Simulador</span>
-    </button>
-</nav>
 </body>
 </html>
