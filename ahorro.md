@@ -88,4 +88,6 @@ Sección para planificar viajes con:
 | 2026-03-25 | Widget fecha: ajuste fino de espaciado con control exacto de píxeles — gap: 3px entre texto y número |
 | 2026-03-25 | Toggle modo oscuro rediseñado como switch estilo iOS (pill verde/gris con círculo deslizante) |
 | 2026-03-25 | Teclado numérico en móvil, fondos de color en cards de métricas, separadores entre secciones, barra de navegación fija inferior con 5 tabs |
+| 2026-03-25 | Eliminar barra de navegación inferior |
+| 2026-03-25 | Inputs: seleccionar contenido al hacer foco; eliminar sección historial; añadir ejemplo en cursiva en coste de oportunidad |
 | 2026-03-25 | Emoji header cambiado a familia 👨‍👩‍👧‍👦, tabs convertidas en segmented control iOS, animación en números de métricas, header comprimido al hacer scroll |
