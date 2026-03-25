@@ -385,7 +385,7 @@
             border: none;
             outline: none;
             padding: 8px 10px;
-            font-size: 14px;
+            font-size: 16px;
             color: var(--text);
             background: transparent;
             font-family: inherit;
@@ -966,7 +966,7 @@
             border: 1.5px solid var(--border);
             border-radius: 7px;
             outline: none;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 800;
             color: var(--primary);
             background: var(--card);
@@ -2384,11 +2384,13 @@
     render();
     applyDark();
 
-    // ─── Teclado numérico en móvil + seleccionar contenido al hacer foco ─────
-    document.querySelectorAll('input[type="number"]').forEach(i => {
-        i.inputMode = 'decimal';
-        i.addEventListener('focus', () => i.select());
-    });
+    // ─── Teclado numérico en móvil + limpiar cero al hacer foco ─────────────
+    document.querySelectorAll('input[type="number"]').forEach(i => i.inputMode = 'decimal');
+    document.addEventListener('focus', e => {
+        if (e.target.matches('input[type="number"]') && e.target.value === '0') {
+            e.target.value = '';
+        }
+    }, true);
 
 </script>
 
