@@ -842,20 +842,33 @@
         body.dark .inline-input             { background: transparent; }
 
         .dark-toggle {
-            background: none;
-            border: 1.5px solid var(--border);
-            border-radius: 11px;
-            width: 52px;
-            height: 52px;
+            position: relative;
+            width: 51px;
+            height: 31px;
+            background: #e5e5ea;
+            border: none;
+            border-radius: 15.5px;
             cursor: pointer;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.15s;
+            transition: background 0.25s ease;
             flex-shrink: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        .dark-toggle:hover { background: var(--border); }
+        .dark-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.25s ease;
+        }
+        body.dark .dark-toggle { background: #34c759; }
+        body.dark .dark-toggle::after { transform: translateX(20px); }
+        .dark-toggle:hover { opacity: 0.85; }
 
         .cal-widget {
             width: 52px;
@@ -1164,7 +1177,7 @@
                 </div>
                 <div class="cal-day" id="cal-day"></div>
             </div>
-            <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()">🌙</button>
+            <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()"></button>
         </div>
     </div>
 </header>
@@ -1977,8 +1990,6 @@
     // ─── Modo oscuro ──────────────────────────────────────────────────────────
     function applyDark() {
         document.body.classList.toggle('dark', !!S.darkMode);
-        const btn = el('dark-toggle');
-        if (btn) btn.textContent = S.darkMode ? '☀️' : '🌙';
     }
 
     window.toggleDark = function() {
