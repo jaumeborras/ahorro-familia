@@ -86,3 +86,5 @@ Sección para planificar viajes con:
 | 2026-03-25 | Títulos de sección más visibles: aumentado tamaño a 15px, eliminadas mayúsculas y color gris |
 | 2026-03-25 | Fecha del header rediseñada como widget estilo Calendario iOS (día en rojo, mes en gris, número grande), al lado del toggle de modo oscuro, ambos del mismo tamaño |
 | 2026-03-25 | Widget fecha: ajuste fino de espaciado con control exacto de píxeles — gap: 3px entre texto y número |
+| 2026-03-25 | Toggle modo oscuro rediseñado como switch estilo iOS (pill verde/gris con círculo deslizante) |
+| 2026-03-25 | Emoji header cambiado a familia 👨‍👩‍👧‍👦, tabs convertidas en segmented control iOS, animación en números de métricas, header comprimido al hacer scroll |
