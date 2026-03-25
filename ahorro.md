@@ -85,3 +85,4 @@ Sección para planificar viajes con:
 | 2026-03-24 | Añadir simulador de cambio de vida con presets (excedencia, hijo, compra) y coste de oportunidad con tabla 3×3 |
 | 2026-03-25 | Títulos de sección más visibles: aumentado tamaño a 15px, eliminadas mayúsculas y color gris |
 | 2026-03-25 | Fecha del header rediseñada como widget estilo Calendario iOS (día en rojo, mes en gris, número grande), al lado del toggle de modo oscuro, ambos del mismo tamaño |
+| 2026-03-25 | Widget fecha: ajuste fino de espaciado con control exacto de píxeles — gap: 3px entre texto y número |
