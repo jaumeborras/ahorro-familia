@@ -1163,6 +1163,9 @@
         .opp-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; text-align: center; }
         .opp-empty { font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px; }
 
+        /* ── Prevenir zoom iOS: todos los inputs mínimo 16px ─────────────────── */
+        input[type="number"], input[type="text"], input[type="date"] { font-size: 16px !important; }
+
         /* ── Separadores de sección ──────────────────────────────────────────── */
         .section-start { margin-top: 16px; }
 
@@ -2385,10 +2388,20 @@
     applyDark();
 
     // ─── Teclado numérico en móvil + limpiar cero al hacer foco ─────────────
-    document.querySelectorAll('input[type="number"]').forEach(i => i.inputMode = 'decimal');
+    function _applyInputMode(root) {
+        const inputs = root.matches('input[type="number"]') ? [root]
+            : [...root.querySelectorAll('input[type="number"]')];
+        inputs.forEach(i => { i.inputMode = 'decimal'; });
+    }
+    _applyInputMode(document.body);
+    new MutationObserver(muts => {
+        muts.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) _applyInputMode(n); }));
+    }).observe(document.body, { childList: true, subtree: true });
+
     document.addEventListener('focus', e => {
-        if (e.target.matches('input[type="number"]') && e.target.value === '0') {
-            e.target.value = '';
+        if (e.target.matches('input[type="number"]')) {
+            const v = parseFloat(e.target.value);
+            if (!isNaN(v) && v === 0) e.target.value = '';
         }
     }, true);
 
