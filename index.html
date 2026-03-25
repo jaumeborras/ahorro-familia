@@ -1278,6 +1278,13 @@
             </div>
             <div style="margin-top:12px; font-size:12px; color:var(--text-muted); background:#f8fafc; border-radius:8px; padding:10px 12px; line-height:1.6">
                 La regla 50/30/20 sugiere: <b>50%</b> necesidades, <b>30%</b> deseos, <b>20%</b> ahorro.
+                <span onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'; this.textContent=this.textContent==='Ver más ▾'?'Ver menos ▴':'Ver más ▾';"
+                    style="color:var(--primary); cursor:pointer; font-weight:600; margin-left:6px; white-space:nowrap">Ver más ▾</span>
+                <div style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--border)">
+                    <div style="margin-bottom:4px"><b>50% necesidades:</b> alquiler, hipoteca, luz, agua, alimentación, transporte esencial, seguros.</div>
+                    <div style="margin-bottom:4px"><b>30% deseos:</b> ocio, restaurantes, ropa, suscripciones, viajes, caprichos.</div>
+                    <div><b>20% ahorro:</b> fondo de emergencia, inversión, objetivos a largo plazo.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1356,7 +1363,7 @@
         </div>
         <div class="travel-goals-list" id="travel-goals-container">
             <p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">
-                No hay viajes planificados. Pulsa "Añadir viaje" para empezar.
+                No hay viajes planificados todavía. Pulsa "+ Añadir viaje" para empezar. Puedes añadir el destino, la fecha y el presupuesto — la app calculará cuánto necesitáis ahorrar cada mes para llegar a tiempo.
             </p>
         </div>
     </div>
@@ -1410,7 +1417,8 @@
 
     <div class="card section-start" id="sec-simulador">
         <div class="card-title">Simulador de cambio de vida</div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">Simula cualquier cambio en vuestra situación y ve el impacto en tiempo real.</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px">Simula cualquier cambio en vuestra situación y ve el impacto en tiempo real.</div>
+        <div style="font-size:11px; color:var(--text-muted); font-style:italic; margin-bottom:16px">Elige un escenario de los botones de abajo o introduce los cambios manualmente en los campos.</div>
 
         <div class="sim-presets">
             <button class="sim-preset-btn" id="sim-btn-excj"   onclick="simPreset('excj')"  >Jaime en excedencia</button>
@@ -1888,7 +1896,7 @@
     function renderTravel(monthly) {
         const container = el('travel-goals-container');
         if (!S.travelGoals || S.travelGoals.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">No hay viajes planificados. Pulsa "Añadir viaje" para empezar.</p>';
+            container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px; font-size:14px">No hay viajes planificados todavía. Pulsa "+ Añadir viaje" para empezar. Puedes añadir el destino, la fecha y el presupuesto — la app calculará cuánto necesitáis ahorrar cada mes para llegar a tiempo.</p>';
             return;
         }
         container.innerHTML = '';
