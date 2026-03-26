@@ -2441,12 +2441,12 @@
 
     // ─── Coste de oportunidad ─────────────────────────────────────────────────
     // ─── Simulador Hipoteca ───────────────────────────────────────────────────
-    function onMortDp(val) {
+    window.onMortDp = function(val) {
         el('mort-dp-lbl').textContent = val + '%';
         calcMortgage();
     }
 
-    function calcMortgage() {
+    window.calcMortgage = function() {
         const price = parseFloat(el('mort-price')?.value) || 0;
         const saved = parseFloat(el('mort-saved')?.value) || 0;
         const dp    = parseFloat(el('mort-dp')?.value)    || 30;
