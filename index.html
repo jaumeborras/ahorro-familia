@@ -1169,6 +1169,72 @@
         /* ── Separadores de sección ──────────────────────────────────────────── */
         .section-start { margin-top: 16px; }
 
+        /* ── Simulador hipoteca ───────────────────────────────────────────────── */
+        .mort-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .mort-res-card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 13px 14px;
+        }
+        .mort-res-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 5px; }
+        .mort-res-val { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; }
+        .mort-res-val.c-blue   { color: var(--primary); }
+        .mort-res-val.c-green  { color: var(--green); }
+        .mort-res-val.c-red    { color: var(--red); }
+        .mort-res-val.c-orange { color: var(--orange); }
+
+        .mort-alert {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 13px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .mort-alert.ok      { background: var(--green-light);  color: var(--green); }
+        .mort-alert.warning { background: var(--orange-light); color: var(--orange); }
+        .mort-alert.danger  { background: var(--red-light);    color: var(--red); }
+
+        .mort-slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px 0 4px;
+            border-bottom: 1px solid var(--border);
+        }
+        .mort-slider-row:last-of-type { border-bottom: none; }
+        .mort-slider-header { display: flex; justify-content: space-between; align-items: center; }
+        .mort-slider-label  { font-size: 14px; font-weight: 500; color: var(--text); }
+        .mort-slider-sub    { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
+        .mort-slider-val    { font-size: 15px; font-weight: 700; color: var(--primary); }
+
+        input.mort-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+        input.mort-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+        }
+        body.dark input.mort-range { background: rgba(255,255,255,0.12); }
+
         /* ── Metric card backgrounds ─────────────────────────────────────────── */
         .metric-card.income   { background: rgba(59,130,246,0.07); }
         .metric-card.expenses { background: rgba(124,58,237,0.07); }
@@ -1500,6 +1566,91 @@
                     <div class="sr-val" id="sim-r-free">—</div>
                     <div class="sr-delta" id="sim-d-free"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card section-start" id="sec-hipoteca">
+        <div class="section-header">
+            <div class="card-title">Simulador de hipoteca</div>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">Calcula cuánto necesitáis ahorrar para la entrada y cuál sería la cuota mensual.</div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;">
+            <div>
+                <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Precio del piso</div>
+                <div class="input-group">
+                    <span class="input-prefix">€</span>
+                    <input type="number" inputmode="decimal" id="mort-price" min="0" step="1000" placeholder="250000" oninput="calcMortgage()">
+                </div>
+            </div>
+            <div>
+                <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Ahorro actual</div>
+                <div class="input-group">
+                    <span class="input-prefix">€</span>
+                    <input type="number" inputmode="decimal" id="mort-saved" min="0" step="500" placeholder="0" oninput="calcMortgage()">
+                </div>
+            </div>
+        </div>
+
+        <div class="mort-slider-row" style="margin-top:12px;">
+            <div class="mort-slider-header">
+                <div>
+                    <div class="mort-slider-label">Entrada requerida</div>
+                    <div class="mort-slider-sub">Banco 20% + ~10% notaría y gastos</div>
+                </div>
+                <span class="mort-slider-val" id="mort-dp-lbl">30%</span>
+            </div>
+            <input type="range" class="mort-range" id="mort-dp" min="10" max="50" value="30" step="1" oninput="onMortDp(this.value)">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted)"><span>10%</span><span>50%</span></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0 16px;">
+            <div>
+                <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Tipo de interés</div>
+                <div class="input-group">
+                    <span class="input-prefix">%</span>
+                    <input type="number" inputmode="decimal" id="mort-rate" min="0" max="20" step="0.1" value="3.5" placeholder="3.5" oninput="calcMortgage()">
+                </div>
+            </div>
+            <div>
+                <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Plazo</div>
+                <select id="mort-years" onchange="calcMortgage()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;font-weight:600;background:var(--card);color:var(--text);outline:none;cursor:pointer;">
+                    <option value="15">15 años</option>
+                    <option value="20">20 años</option>
+                    <option value="25">25 años</option>
+                    <option value="30" selected>30 años</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="mort-alert-box"></div>
+        <div class="mort-grid">
+            <div class="mort-res-card">
+                <div class="mort-res-lbl">Necesitáis para entrar</div>
+                <div class="mort-res-val c-blue" id="res-needed">—</div>
+            </div>
+            <div class="mort-res-card">
+                <div class="mort-res-lbl">Os falta ahorrar</div>
+                <div class="mort-res-val c-red" id="res-missing">—</div>
+            </div>
+            <div class="mort-res-card">
+                <div class="mort-res-lbl">Cuota mensual</div>
+                <div class="mort-res-val c-green" id="res-payment">—</div>
+            </div>
+            <div class="mort-res-card">
+                <div class="mort-res-lbl">Lo alcanzáis en</div>
+                <div class="mort-res-val c-orange" id="res-timeline">—</div>
+            </div>
+        </div>
+        <div class="mort-grid" style="margin-bottom:0">
+            <div class="mort-res-card">
+                <div class="mort-res-lbl">Préstamo bancario</div>
+                <div class="mort-res-val c-blue" id="res-loan">—</div>
+            </div>
+            <div class="mort-res-card">
+                <div class="mort-res-lbl">Total intereses</div>
+                <div class="mort-res-val c-red" id="res-interest">—</div>
             </div>
         </div>
     </div>
@@ -2289,6 +2440,86 @@
     };
 
     // ─── Coste de oportunidad ─────────────────────────────────────────────────
+    // ─── Simulador Hipoteca ───────────────────────────────────────────────────
+    function onMortDp(val) {
+        el('mort-dp-lbl').textContent = val + '%';
+        calcMortgage();
+    }
+
+    function calcMortgage() {
+        const price = parseFloat(el('mort-price')?.value) || 0;
+        const saved = parseFloat(el('mort-saved')?.value) || 0;
+        const dp    = parseFloat(el('mort-dp')?.value)    || 30;
+        const rate  = parseFloat(el('mort-rate')?.value)  || 3.5;
+        const years = parseInt(el('mort-years')?.value)   || 30;
+
+        const dash = id => { const e = el(id); if (e) e.textContent = '—'; };
+        if (!price) {
+            ['res-needed','res-missing','res-payment','res-timeline','res-loan','res-interest'].forEach(dash);
+            const ab = el('mort-alert-box'); if (ab) ab.innerHTML = '';
+            return;
+        }
+
+        const needed  = price * dp / 100;
+        const missing = Math.max(0, needed - saved);
+        const loan    = price - needed;
+        const mr      = rate / 100 / 12;
+        const n       = years * 12;
+        const payment = mr > 0
+            ? loan * (mr * Math.pow(1+mr,n)) / (Math.pow(1+mr,n)-1)
+            : loan / n;
+        const totalInterest = payment * n - loan;
+
+        const fmtE = v => Math.round(v).toLocaleString('es-ES') + ' €';
+
+        el('res-needed').textContent  = fmtE(needed);
+        el('res-loan').textContent    = fmtE(loan);
+        el('res-payment').textContent = fmtE(payment) + '/mes';
+        el('res-interest').textContent = fmtE(totalInterest);
+
+        if (missing <= 0) {
+            el('res-missing').textContent  = '¡Ya tenéis suficiente!';
+            el('res-missing').className    = 'mort-res-val c-green';
+            el('res-timeline').textContent = '¡Listos para comprar!';
+            el('res-timeline').className   = 'mort-res-val c-green';
+        } else {
+            el('res-missing').textContent = fmtE(missing);
+            el('res-missing').className   = 'mort-res-val c-red';
+            const sav = savingsAmt();
+            if (sav > 0) {
+                const mos = Math.ceil(missing / sav);
+                const y   = Math.floor(mos / 12);
+                const mo  = mos % 12;
+                let str = '';
+                if (y)       str += y + ' año' + (y > 1 ? 's' : '');
+                if (y && mo) str += ' y ';
+                if (mo)      str += mo + ' mes' + (mo > 1 ? 'es' : '');
+                el('res-timeline').textContent = str || '< 1 mes';
+                el('res-timeline').className   = 'mort-res-val c-orange';
+            } else {
+                el('res-timeline').textContent = 'Define vuestro ahorro';
+                el('res-timeline').className   = 'mort-res-val c-orange';
+            }
+        }
+
+        // Alerta cuota vs ingresos
+        const alertBox = el('mort-alert-box');
+        if (alertBox && totalIncome() > 0 && payment > 0) {
+            const pct = (payment / totalIncome()) * 100;
+            let cls, txt;
+            if (pct > 40) {
+                cls = 'danger';  txt = `⚠️ La cuota supera el ${pct.toFixed(0)}% de vuestros ingresos — riesgo elevado`;
+            } else if (pct > 30) {
+                cls = 'warning'; txt = `📊 La cuota es el ${pct.toFixed(0)}% de vuestros ingresos — en el límite recomendado`;
+            } else {
+                cls = 'ok';      txt = `✅ La cuota es el ${pct.toFixed(0)}% de vuestros ingresos — dentro del rango saludable`;
+            }
+            alertBox.innerHTML = `<div class="mort-alert ${cls}">${txt}</div>`;
+        } else if (alertBox) {
+            alertBox.innerHTML = '';
+        }
+    }
+
     function renderOpp() {
         const resultsEl = el('opp-results');
         if (!resultsEl) return;

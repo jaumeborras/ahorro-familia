@@ -92,3 +92,4 @@ Sección para planificar viajes con:
 | 2026-03-25 | Inputs: seleccionar contenido al hacer foco; eliminar sección historial; añadir ejemplo en cursiva en coste de oportunidad |
 | 2026-03-25 | Textos de ayuda: empty state detallado en planificador, hint en simulador, tooltip expandible 50/30/20 |
 | 2026-03-25 | Emoji header cambiado a familia 👨‍👩‍👧‍👦, tabs convertidas en segmented control iOS, animación en números de métricas, header comprimido al hacer scroll |
+| 2026-03-26 | Añadir simulador de hipoteca: precio, ahorro actual, % entrada, tipo interés, plazo, cuota mensual, tiempo para alcanzar el objetivo y alerta según % sobre ingresos |
